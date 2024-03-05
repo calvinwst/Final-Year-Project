@@ -131,6 +131,7 @@ const UserFeedDetails = () => {
                 }
                 updateComments={updateComments}
                 deleteComment={deletedComment}
+                type="user"
               />
             ))}
           </Stack>

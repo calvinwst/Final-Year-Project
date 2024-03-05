@@ -38,6 +38,23 @@ import axios from "axios";
 import { ca } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { RiEdit2Fill } from "react-icons/ri";
+import jwt_decode from "jwt-decode"; 
+
+interface UserProfile {
+  profileImgPath: string;
+}
+
+interface User {
+  _id: string;
+  username: string;
+  profile: UserProfile;
+}
+
+interface Comment {
+  content: string;
+  _id: string;
+  user: User;
+}
 
 interface CustomFeedCardProps {
   _id?: string;
@@ -47,27 +64,15 @@ interface CustomFeedCardProps {
   fileImgPath?: string;
   profileImgPath?: string;
   createdAt: Date;
-  onClick?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
   like?: [] | null;
   comments: [];
-  updateComments?: (
-    postId: string,
-    comment: {
-      content: string;
-      _id: string;
-      user: {
-        _id: string;
-        username: string;
-        profile: {
-          profileImgPath: string;
-        };
-      };
-    }
-  ) => void;
+  updateComments?: (postId: string, comment: Comment) => void;
   deleteComment?: (postId: string, commentId: string) => void;
   editPost?: boolean;
+  moderator?: string;
+  type: "user" | "community";
 }
 
 const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
@@ -78,7 +83,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   title,
   _id,
   createdAt,
-  onClick,
   onDelete,
   onEdit,
   like,
@@ -86,13 +90,14 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   updateComments,
   deleteComment,
   editPost,
+  moderator,
+  type,
 }) => {
   console.log("the comment in userFeed >>", comments);
   console.log("the like in userFeed >>", editPost);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comment, setComment] = useState("");
-  // const [editPost, setEditPost] = useState(false);
   const auth = useContext(AuthContext);
   const userId = auth.userId;
   const [isLike, setIsLike] = useState(false);
@@ -113,6 +118,7 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   };
 
   useEffect(() => {
+    console.log("UserId >>>", userId);
     if (userId !== undefined) {
       if (userIncludeInLike()) {
         setIsLike(true);
@@ -121,7 +127,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   }, [userId]);
 
   const LikePost = async () => {
-    // AiOutlineConsoleSql.
     console.log("this is _id >>>", _id);
     try {
       const response = await axios.post(
@@ -136,13 +141,13 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
         }
       );
       console.log("this is the response :: ", response);
+      setIsLike(true);
       toast({
         title: "Post liked",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      setIsLike(true);
     } catch (err) {
       console.log(err);
     }
@@ -263,6 +268,9 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
 
+  // console.log("this is the like >>>", like);
+  console.log("This is the isLike >>>", isLike);
+
   return (
     <>
       <Box borderWidth="1px" borderRadius="lg" bg="white" shadow="sm" p={3}>
@@ -303,12 +311,16 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
               variant="outline"
             />
             <MenuList>
-              <MenuItem icon={<AiFillDelete />} onClick={onDelete}>
-                Delete{" "}
-              </MenuItem>
-              <MenuItem icon={<AiFillEdit />} onClick={onEdit}>
-                Edit
-              </MenuItem>
+              {moderator === auth.userId && (
+                <MenuItem icon={<AiFillDelete />} onClick={onDelete}>
+                  Delete
+                </MenuItem>
+              )}
+              {type === "user" && (
+                <MenuItem icon={<AiFillEdit />} onClick={onEdit}>
+                  Edit
+                </MenuItem>
+              )}
             </MenuList>
           </Menu>
         </Flex>
@@ -333,6 +345,9 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
         </Box>
         <Flex p={5} borderTopWidth="1px" justifyContent="space-between">
           <Button
+            // leftIcon={isLike ? <BiSolidLike /> : <BiLike />}
+            // variant="ghost"
+            // onClick={isLike ? unLike : LikePost}
             leftIcon={isLike ? <BiSolidLike /> : <BiLike />}
             variant="ghost"
             onClick={isLike ? unLike : LikePost}
@@ -389,17 +404,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                       }
                     />
                   )}
-                  {/* <Button
-                    ml="3"
-                    size="xs"
-                    variant="ghost"
-                    rightIcon={<AiFillDelete />}
-                    onClick={() =>
-                      onDeleteComment(comment._id, comment.user._id)
-                    }
-                  /> */}
-
-                  {/* </Button> */}
                 </Flex>
               ))}
               <FormControl id="comment">

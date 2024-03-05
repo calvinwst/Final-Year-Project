@@ -110,11 +110,16 @@ const CustomNav = () => {
               <MenuList>
                 <MenuGroup color={"black"} title="Profile">
                   <MenuItem color={"black"} as={RouterLink} to="/userProfile">
-                    <Text color="black" style={{
-                      textDecoration: "none",
-                      fontSize: "0.8rem",
-                      fontFamily: "sans-serif",
-                    }}>My Account</Text>
+                    <Text
+                      color="black"
+                      style={{
+                        textDecoration: "none",
+                        fontSize: "0.8rem",
+                        fontFamily: "sans-serif",
+                      }}
+                    >
+                      My Account
+                    </Text>
                   </MenuItem>
                   <MenuItem color={"black"} onClick={auth.logout}>
                     Logout
@@ -123,7 +128,22 @@ const CustomNav = () => {
                 <MenuDivider />
                 <MenuGroup color={"black"} title="Help">
                   <MenuItem color={"black"}>Docs</MenuItem>
-                  <MenuItem color={"black"}>FAQ</MenuItem>
+                  <MenuItem
+                    as={RouterLink}
+                    to="/setting"
+                    style={{ color: "black !important" }}
+                  >
+                    <Text
+                      color="black"
+                      style={{
+                        textDecoration: "none",
+                        fontSize: "0.9rem",
+                        fontFamily: "sans-serif",
+                      }}
+                    >
+                      Setting
+                    </Text>
+                  </MenuItem>
                 </MenuGroup>
               </MenuList>
             </Menu>

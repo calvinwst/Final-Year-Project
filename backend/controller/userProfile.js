@@ -612,6 +612,24 @@ exports.markAsRead = async (req, res) => {
   }
 };
 
+//Get all connections of a user
+exports.getAllConnections = async (req, res) => {
+  try {
+    const { id } = req.params;
+    User.findById(id)
+      .populate("connections", "username")
+      .then((user) => {
+        if (user) {
+          res.status(200).json(user.connections);
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // // ADD license to user profile
 // exports.addLicense = async (req, res) => {
 //   // TODO: Implement this function

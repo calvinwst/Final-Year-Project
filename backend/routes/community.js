@@ -5,7 +5,6 @@ const communityController = require("../controller/community");
 const multer = require("multer");
 // const upload = multer({ dest: 'uploads/image' });
 const upload = require("../util/store");
-const checkAuth = require("../middleware/check-auth");
 
 const uploadField = [
   { name: "image", maxCount: 1 },
@@ -21,8 +20,7 @@ router.get("/community/:id", communityController.getCommunityById);
 //GET communityFeed from community
 router.get("/community/:id/feed", communityController.getCommunityFeed);
 
-//Use checkAuth middleware to protect routes
-// router.use(checkAuth);
+
 
 //GET commmuntiy id and name
 router.get("/user/:id/communities", communityController.getUserCommunities);
@@ -36,12 +34,14 @@ router.post(
 );
 
 // UPDATE community by ID
-router.put("/community/:id", communityController.updateCommunity);
+router.put(
+  "/community/:id",
+  upload.fields(uploadField),
+  communityController.updateCommunity
+);
 
 // DELETE community by ID
 router.delete("/community/:id", communityController.deleteCommunity);
-
-
 
 // ADD member to community
 router.post("/community/:id/join", communityController.addMember);

@@ -65,8 +65,9 @@ app.use(
 );
 
 //routers
-const userProfileRoutes = require("./routes/userProfile");
 const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
+const userProfileRoutes = require("./routes/userProfile");
 const researchRoutes = require("./routes/research");
 const communityRoutes = require("./routes/community");
 const userFeedRoutes = require("./routes/userFeed");
@@ -75,13 +76,13 @@ const chatRoutes = require("./routes/chat");
 
 //middleware
 // app.use( communityRoutes);
-app.use("/auth", authRoutes);
-app.use(userProfileRoutes);
-app.use(researchRoutes);
-app.use(communityRoutes);
-app.use(userFeedRoutes);
-app.use(connectionRoutes);
-app.use(chatRoutes);
+
+app.use(checkAuth, userProfileRoutes);
+app.use(checkAuth, researchRoutes);
+app.use(checkAuth, communityRoutes);
+app.use(checkAuth, userFeedRoutes);
+app.use(checkAuth, connectionRoutes);
+app.use(checkAuth, chatRoutes);
 
 //connect to db
 mongoose
@@ -90,10 +91,7 @@ mongoose
   )
   .then(() => {
     console.log("connected to db");
-    //listen for requests
-    // app.listen(process.env.PORT, () => {
-    //   console.log("listening on port", process.env.PORT);
-    // });
+
     server.listen(process.env.PORT, () => {
       console.log("listening on port", process.env.PORT);
     });

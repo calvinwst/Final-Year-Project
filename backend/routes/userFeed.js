@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userFeedController = require("../controller/userFeed");
-const checkAuth = require("../middleware/check-auth");
 const upload = require("../util/store");
 
 const uploadField = [
@@ -14,9 +13,6 @@ router.get("/userFeed", userFeedController.getAllUserFeed);
 
 // GET userFeed by ID
 router.get("/userFeed/:id", userFeedController.getUserFeedById);
-
-//Use checkAuth middleware to protect routes
-// router.use(checkAuth);
 
 // CREATE userFeed
 router.post(

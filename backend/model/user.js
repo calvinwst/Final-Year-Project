@@ -42,6 +42,13 @@ const notificationSchema = new mongoose.Schema({
   read: { type: Boolean, default: false },
 });
 
+const emailVerification = new mongoose.Schema({
+  token: { type: String, required: true },
+  expires: Date,
+  verified: { type: Boolean, default: false },
+  
+})
+
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -53,6 +60,8 @@ const userSchema = new mongoose.Schema({
   notifications: { type: [notificationSchema] },
   connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   communities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Community' }],
+  emailVerification: { type: emailVerification },
+
   // licenses: { type: [userLicenseSchema] },
 });
 

@@ -105,14 +105,65 @@ exports.deleteUserFeed = (req, res) => {
 };
 
 // Add like to userFeed
+// exports.addLike = (req, res) => {
+//   UserFeed.findByIdAndUpdate(req.params.id, {
+//     $addToSet: { like: [req.body.userId] },
+//   })
+//     .then(() => {
+//       res.status(200).json({
+//         message: "Like added successfully!",
+//       });
+//     })
+//     .catch((error) => {
+//       res.status(400).json({
+//         error: error,
+//       });
+//     });
+// };
 exports.addLike = (req, res) => {
-  UserFeed.findByIdAndUpdate(req.params.id, {
-    $addToSet: { like: [req.body.userId] },
-  })
-    .then(() => {
-      res.status(200).json({
-        message: "Like added successfully!",
-      });
+  const userId = req.body.userId;
+
+  // Find the user who liked the post
+  User.findById(userId)
+    .then((user) => {
+      // Update the UserFeed document
+      UserFeed.findByIdAndUpdate(req.params.id, {
+        $addToSet: { like: [userId] },
+      })
+        .populate(
+          "user",
+          "username profile.firstName profile.lastName profile.profileImgPath"
+        )
+        .then((updateUserFeed) => {
+          console.log("this is the updated userFeed: ", updateUserFeed);
+
+          // Create a notification
+          const notification = {
+            message: `${user.username} liked your post`,
+            link: `/userfeed/${req.params.id}`,
+            read: false,
+          };
+
+          // Update the user who received the like
+          User.findByIdAndUpdate(
+            updateUserFeed.user._id,
+            {
+              $push: { notifications: notification },
+            },
+            { new: true }
+          ).then((user) => {
+            console.log("Notification added successfully!");
+          });
+
+          res.status(200).json({
+            message: "Like added successfully!",
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            error: error,
+          });
+        });
     })
     .catch((error) => {
       res.status(400).json({

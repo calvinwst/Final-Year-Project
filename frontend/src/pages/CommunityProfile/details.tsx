@@ -55,12 +55,7 @@ const CommunityDetails = () => {
   const numberOfMembers = community.member?.length;
   const bgColors = useColorModeValue("white", "gray.700");
 
-  // console.log(
-  //   "this is the profile image path >>> ",
-  //   community.communityFeed?.map(
-  //     (post: any) => post.user.profile.profileImgPath
-  //   )
-  // );
+  const moderator = community.moderator;
 
   useEffect(() => {
     fetchCommunityDetails();
@@ -215,7 +210,10 @@ const CommunityDetails = () => {
     formData.append("title", posts.title);
     formData.append("content", posts.content);
     formData.append("image", posts.image);
-    if (userId && community?.member?.includes(userId)) {
+    if (
+      userId &&
+      community?.member?.some((member: any) => member._id === userId)
+    ) {
       formData.append("user", userId);
       axios
         .post(`http://localhost:4000/community/${communityId}/post`, formData, {
@@ -255,6 +253,55 @@ const CommunityDetails = () => {
     console.log("this is the post >>> ", posts);
   };
 
+  //calling delete post api for moderator
+  const handleDeletePost = (postId: string) => {
+    const moderator = community.moderator;
+    console.log("this is the moderator >> ", moderator);
+    if (userId === moderator && moderator !== "") {
+      axios
+        .delete(
+          `http://localhost:4000/community/${communityId}/post/${postId}`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        )
+        .then((res) => {
+          console.log("this is the response", res);
+          
+
+          toast({
+            title: "Deleted",
+            description: "You have successfully deleted",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          fetchCommunityDetails();
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast({
+            title: "Error",
+            description: "You have already deleted the post",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        });
+    } else {
+      toast({
+        title: "Error",
+        description: "You are not the moderator of this community",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   const handleImageChange = (e: any) => {
     setPosts({
       ...posts,
@@ -278,8 +325,6 @@ const CommunityDetails = () => {
     });
     console.log("this is the community in editchanges >>> ", community);
   };
-
-  // console.log("this is the community >>> ", community);
 
   const updateComments = (postId: string, comment: any) => {
     setCommunity({
@@ -313,7 +358,7 @@ const CommunityDetails = () => {
         }
       }),
     });
-  }
+  };
 
   return (
     <>
@@ -396,7 +441,11 @@ const CommunityDetails = () => {
           <Box p={4} bg={bgColors} rounded="lg" shadow="xl" mb={4}>
             <FormControl id="title" mb={2}>
               <FormLabel>Title</FormLabel>
-              <Input placeholder="Title" onChange={handleInputChange} />
+              <Input
+                placeholder="Title"
+                onChange={handleInputChange}
+                value={posts.title}
+              />
             </FormControl>
             <Flex alignItems="start">
               <FormControl id="content" mr={2}>
@@ -404,6 +453,7 @@ const CommunityDetails = () => {
                 <Textarea
                   placeholder="WHAT ON YOUR MIND ....."
                   onChange={handleInputChange}
+                  value={posts.content}
                 />
               </FormControl>
               <FormControl id="post-image" mb={3}>
@@ -437,10 +487,12 @@ const CommunityDetails = () => {
               createdAt={post.createdAt}
               profileImgPath={post.user ? post.user.profile.profileImgPath : ""}
               fileImgPath={post.multimediaContent}
-              onDelete={() => console.log("delete")}
+              onDelete={() => handleDeletePost(post._id)}
               onEdit={() => console.log("edit")}
               updateComments={updateComments}
               deleteComment={deleteComment}
+              moderator={moderator}
+              type="community"
             />
           ))}
         </Stack>

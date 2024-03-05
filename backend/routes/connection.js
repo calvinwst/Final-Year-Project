@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const connectionController = require("../controller/connection");
-const checkAuth = require("../middleware/check-auth");
-
-//apply checkAuth middleware to all routes
-router.use(checkAuth);
 
 //send connection request
 router.post(
@@ -32,7 +28,10 @@ router.get(
 );
 
 //checkConnection status
-router.get("/connection/status/:userId/:networkId", connectionController.checkConnectionStatus);
+router.get(
+  "/connection/status/:userId/:networkId",
+  connectionController.checkConnectionStatus
+);
 
 //Get list of connections
 router.get("/connection", connectionController.getConnections);

@@ -2,7 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 const userProfileController = require("../controller/userProfile");
-const checkAuth = require("../middleware/check-auth");
 const upload = require("../util/store");
 
 const uploadField = [{ name: "image", maxCount: 1 }];
@@ -27,8 +26,7 @@ router.put(
   userProfileController.updateUserProfileImage
 );
 
-//Use checkAuth middleware to protect routes
-// router.use(checkAuth);
+
 
 // UPDATE user profile by ID
 router.put("/users/:id", userProfileController.updateUserProfileById);
@@ -91,6 +89,9 @@ router.get("/users/:id/notifications", userProfileController.getAllNotificationB
 
 //PATCH user notification by user profile ID
 router.patch("/users/:id/notifications/:notification_id/read", userProfileController.markAsRead);
+
+//Get all User connections by user profile ID
+router.get("/users/:id/connections", userProfileController.getAllConnections);
 
 // ADD license to user profile
 // router.post("/users/:id/license", userProfileController.addLicense);

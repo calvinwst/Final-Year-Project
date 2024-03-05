@@ -1,11 +1,12 @@
 import React from "react";
 import CustomAuthForm from "../../../components/customForm";
 import CustomContainer from "../../../components/customContainer";
-import { Heading } from "@chakra-ui/react";
+import { Heading, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleSubmitSign = (formData: any) => {
     console.log("this formData is from sign up", formData);
@@ -18,8 +19,22 @@ const SignUp = () => {
     })
       .then((response) => {
         if (response.ok) {
-          alert("Sign up successful!");
-          return response.json(); // Parse the JSON response from the server
+          toast({
+            title: "Sign Up Successful",
+            description: "You have successfully signed up.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          return response.json();
+        } else {
+          toast({
+            title: "Sign Up Failed",
+            description: "Please check your email and password.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         }
 
         throw new Error("Sign up failed"); // Throw an error if the response is not okay

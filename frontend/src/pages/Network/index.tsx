@@ -35,7 +35,12 @@ const Network = () => {
 
   const fetchProfileData = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/users");
+      const res = await axios.get("http://localhost:4000/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("this is the response", res.data);
       setNetwork(res.data);
     } catch (err) {
       console.error(err);
@@ -76,6 +81,17 @@ const Network = () => {
                   email: user.email,
                   description: user.bio,
                   image: user.profile.profileImgPath,
+                  tag: [
+                    user.medicalEducation && user.medicalEducation.length > 0
+                      ? user.medicalEducation[0].medicalSchool
+                      : "N/A",
+                    user.profile.location,
+                    user.profile.specialty,
+                  ],
+                  verified:
+                    user.emailVerification && user.emailVerification.verified
+                      ? user.emailVerification.verified
+                      : false,
                   // status: user.status,
                 }}
                 type="user"

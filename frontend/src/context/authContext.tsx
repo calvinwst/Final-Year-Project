@@ -6,7 +6,7 @@ interface IAuthData {
     isLogged: boolean;
     userId?: string;
     token?: null | string;
-    login: (token:string, userId:string) => void;
+    login: (token:string, userId:string, emailToken?:string) => void;
     logout: () => void;
     storeToken: (token: string) => void;
     storeUserId: (userId: string) => void;

@@ -468,6 +468,7 @@ const UserFeed = () => {
                     editPost={userFeed.isEdited ? userFeed.isEdited : false}
                     updateComments={updateComments}
                     deleteComment={deletedComment}
+                    type="user"
                   />
                 ))}
               </Stack>

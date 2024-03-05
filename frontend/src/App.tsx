@@ -27,6 +27,10 @@ import { useLocation } from "react-router-dom";
 import PublicRoute from "./routes/PublicRoute";
 import Chat from "./pages/Chat";
 import MessageDetails from "./pages/Chat/messageDetails";
+import ForgetPassword from "./pages/Login/ForgetPassword";
+import ResetPassword from "./pages/Login/ResetPassword";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import Setting from "./pages/Setting";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -52,7 +56,7 @@ function App() {
     const storedToken = localStorage.getItem("token");
     const storedUserId = localStorage.getItem("userId");
     const storedIsLogged = localStorage.getItem("isLogged");
-    console.log("this is storedToken in app", storedToken);
+    // console.log("this is storedToken in app", storedToken);
     if (storedToken && storedUserId && storedIsLogged) {
       setIsLogged(storedIsLogged === "true"); // Convert string to boolean
       setToken(storedToken);
@@ -82,6 +86,7 @@ function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("isLogged");
+    localStorage.removeItem("emailToken");
     setIsLogged(false);
     setToken("");
     setUserId("");
@@ -98,8 +103,8 @@ function App() {
     console.log("this is userId in storeUserId", userId);
   }, []);
 
-  console.log("this is the token in app >>", token);
-  console.log("this is the userId in app >>", userId);
+  // console.log("this is the token in app >>", token);
+  // console.log("this is the userId in app >>", userId);
   return (
     <AuthContext.Provider
       value={{
@@ -114,17 +119,38 @@ function App() {
     >
       <CustomNav />
       <Routes>
-        <Route path="/" element={<UserFeed />} />
-        <Route path="/userfeed" element={<UserFeed />} />
+        {/* <Route path="/" element={<UserFeed />} /> */}
+        {/* <Route path="/userfeed" element={<UserFeed />} /> */}
         <Route path="/userfeed/:userFeedID" element={<UserFeedDetails />} />
         {/*Public Route*/}
         <Route path="/login" element={<Login setShowNav={setShowNav} />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/reset-password/:id" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/research/:researchId" element={<ResearchDetails />} />
         <Route path="/community/:communityId" element={<CommunityDetails />} />
         <Route path="/network/:networkId" element={<NetworkDetails />} />
         {/* <Route path="/userfeed/:userFeedid" element={<UserFeedDetails />} /> */}
         {/*Public Route*/}
+
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute isLogged={isLogged} loading={loading}>
+              <UserFeed />
+            </ProtectedRoute>
+          }
+        />
+        {/**Protected Route */}
+        <Route
+          path="/userfeed"
+          element={
+            <ProtectedRoute isLogged={isLogged} loading={loading}>
+              <UserFeed />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -213,6 +239,14 @@ function App() {
           element={
             <ProtectedRoute isLogged={isLogged} loading={loading}>
               <MessageDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/setting"
+          element={
+            <ProtectedRoute isLogged={isLogged} loading={loading}>
+              <Setting />
             </ProtectedRoute>
           }
         />

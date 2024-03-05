@@ -274,12 +274,13 @@ const NetworkDetails = () => {
           mt={16}
         >
           <VStack spacing={4} align="stretch">
-            <Flex justifyContent="space-between" alignItems="center">
+            <Flex justifyContent="center" alignItems="center">
               <HStack spacing={4}>
                 <Avatar
                   src={profileImgPath}
                   size="xl"
                   name={networkData.username}
+                  
                 />
                 <VStack align="start">
                   <Heading as="h2" size="lg">

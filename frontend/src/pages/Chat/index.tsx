@@ -47,6 +47,11 @@ interface ChatProps {
   chatImgPath: string;
 }
 
+interface Connections {
+  _id:string;
+  username: string;
+}
+
 //interface
 
 const Chat = () => {
@@ -60,6 +65,7 @@ const Chat = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedChat, setSelectedChat] = useState<ChatProps | null>(null);
   const { userId } = React.useContext(AuthContext);
+  const [connections, setConnections] = useState<Connections[]>([]);
   const [inputChat, setInputChat] = useState({
     users: [],
     chatName: "",
@@ -84,7 +90,7 @@ const Chat = () => {
 
   useEffect(() => {
     fetchMessageDetails();
-    fetchUserProfile();
+    fetchUserProfileConnection();
   }, []);
 
   const fetchMessageDetails = async () => {
@@ -104,22 +110,25 @@ const Chat = () => {
     }
   };
 
-  const fetchUserProfile = async () => {
-    try {
-      const response = await axios.get(`http://localhost:4000/users`, {
+
+  //fecth user profile connection
+  const fetchUserProfileConnection = async () => {
+    try{
+      const response = await axios.get(`http://localhost:4000/users/${userId}/connections`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      });
+      })
       console.log("this is the response:: ", response.data);
-      setUsers(response.data);
-    } catch (err) {
-      console.log(err);
+      setConnections(response.data);
+
+    }catch(err){
+      console.log(err)
     }
   };
 
 
-  const option = users.map((user) => ({
+  const option = connections.map((user) => ({
     value: user._id,
     label: user.username,
   }));
@@ -246,10 +255,6 @@ const Chat = () => {
     }
   };
 
-  // console.log("this is the users:: ", users);
-  // console.log("this is the chat:: ", chat);
-  // console.log("this is the messagae in parent:: ", messages);
-  console.log("this is the selectedChat:: ", selectedChat);
 
   return (
     <>

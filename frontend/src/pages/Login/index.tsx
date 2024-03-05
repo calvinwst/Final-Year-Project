@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import "./styles.scss";
 import CustomForm from "../../components/customForm";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { CustomStylesLogin, CustomStylesLoginBox } from "./styles";
 import CustomContainer from "../../components/customContainer";
@@ -12,8 +12,8 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ setShowNav }) => {
-  // const [showNav, setShowNav] = useState(false);
   const auth = React.useContext(AuthContext);
+  const toast = useToast();
 
   const navigate = useNavigate();
 
@@ -27,7 +27,22 @@ const Login: React.FC<LoginProps> = ({ setShowNav }) => {
     })
       .then((response) => {
         if (response.ok) {
+          toast({
+            title: "Login Successful",
+            description: "You have successfully logged in.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
           return response.json();
+        } else {
+          toast({
+            title: "Login Failed",
+            description: "Please check your email and password.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         }
 
         throw new Error("Login failed");
@@ -35,15 +50,18 @@ const Login: React.FC<LoginProps> = ({ setShowNav }) => {
       .then((data) => {
         const userId = data.userId;
         const token = data.token;
+        const emailToken = data.emailToken;
+
+        console.log("this is the  >>> ", emailToken);
 
         localStorage.setItem("token", token);
+        localStorage.setItem("emailToken", emailToken);
 
         // Store the token and userId in the context
         auth.storeToken(token);
         auth.storeUserId(userId);
 
-
-        auth.login(token, userId);
+        auth.login(token, userId, emailToken);
         navigate("/");
       })
       .catch((error) => {

@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
 
 import {
   Box,
@@ -24,6 +25,10 @@ import CustomContainer from "../customContainer";
 import { sign } from "crypto";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ca } from "date-fns/locale";
+import * as jwt_decode from "jwt-decode";
+import { AuthContext } from "../../context/authContext";
 
 interface FormFieldOption {
   label: string;
@@ -51,6 +56,8 @@ const CustomAuthForm: React.FC<CustomFormProps> = ({
   name,
 }) => {
   // const [formData, setFormData] = useState<Record<string, string>>({});
+  const auth = React.useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -178,6 +185,17 @@ const CustomAuthForm: React.FC<CustomFormProps> = ({
                   </InputRightElement>
                 </InputGroup>
               </FormControl>
+              {name === "login" && (
+                <Text
+                  align={"center"}
+                  color={"blue.400"}
+                  _hover={{ textDecoration: "underline" }}
+                  cursor={"pointer"}
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Forgot Password?
+                </Text>
+              )}
               <Stack spacing={10} pt={2}>
                 <Button
                   type="submit"
@@ -191,16 +209,34 @@ const CustomAuthForm: React.FC<CustomFormProps> = ({
                 >
                   {name === "signup" ? "Sign Up" : "Login"}
                 </Button>
-                <Button
-                  w={"full"}
-                  maxW={"md"}
-                  variant={"outline"}
-                  leftIcon={<FcGoogle />}
-                >
-                  <Center>
-                    <Text>Sign in with Google</Text>
-                  </Center>
-                </Button>
+                <Text align={"center"} fontSize={"lg"} color={"gray.600"}>
+                  {name === "signup" ? "or" : "Or Login With"}
+                </Text>
+                <Center>
+                  <GoogleLogin
+                    onSuccess={(response) => {
+                      console.log("THi si the response", response);
+                      axios
+                        .post("http://localhost:4000/auth/google/callback", {
+                          token: response.credential,
+                        })
+                        .then((res) => {
+                          if (!res.data.isNewUser) {
+                            const token = res.data.token;
+                            const userId = res.data.userId;
+                            auth.storeToken(token);
+                            auth.storeUserId(userId);
+                            auth.login(token, userId);
+
+                            navigate("/");
+                          }
+                          else if (res.data.isNewUser === true) {
+                            navigate("/login");
+                          }
+                        });
+                    }}
+                  />
+                </Center>
               </Stack>
               <Stack pt={6}>
                 {name === "signup" ? (

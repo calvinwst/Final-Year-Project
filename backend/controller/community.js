@@ -141,10 +141,18 @@ exports.createCommunity = (req, res) => {
 
 //UPDATE community by ID
 exports.updateCommunity = (req, res) => {
-  Community.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    description: req.body.description,
-  })
+  const image = req.files && req.files.image ? req.files.image[0].path : null;
+  console.log("this is image ", image);
+
+  Community.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      description: req.body.description,
+      image: image,
+    },
+    { new: true }
+  )
     .then((community) => {
       res.status(201).json({
         message: "Community updated successfully!",
@@ -363,7 +371,7 @@ exports.updatePost = (req, res) => {
 exports.deletePost = (req, res) => {
   Community.updateOne(
     { _id: req.params.id },
-    { $pull: { communityFeed: { _id: req.params.post_id } } }
+    { $pull: { communityFeed: req.params.post_id } }
   )
     .then(() => {
       res.status(200).json({
@@ -376,7 +384,6 @@ exports.deletePost = (req, res) => {
       });
     });
 };
-
 //Add comment to post specific community id
 exports.addComment = (req, res) => {
   Community.findByIdAndUpdate(req.params.id, {
