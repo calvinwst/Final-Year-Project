@@ -4,13 +4,17 @@ import {
   Button,
   Flex,
   Heading,
-  IconButton,   
+  IconButton,
   Text,
   useDisclosure,
   Input,
   FormControl,
   FormLabel,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
+import { MdBusiness, MdLocationOn, MdDescription } from "react-icons/md";
+import { FaCalendarAlt } from "react-icons/fa";
 import { EditIcon, AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import CustomModal from "../../../components/customModel";
 import CustomButton from "../../../components/customButton";
@@ -28,7 +32,7 @@ interface ExperienceSectionProps {
 const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   experienceData,
   userId,
-  token
+  token,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedData, setSelectedData] = useState<any | null>(null);
@@ -46,11 +50,9 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   });
 
   //call get api to get experience data
-  useEffect(()=>{
+  useEffect(() => {
     fetchExperienceData();
-  }, [])
-
-  
+  }, []);
 
   console.log("this is the experience data", experienceData);
   console.log("this is the token in experience", token);
@@ -75,47 +77,46 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
   const fetchExperienceData = () => {
     setIsLoading(true);
-    axios.get(`http://localhost:4000/users/${userId}/experience`, {
-      headers: {
-        "Authorization" : "Bearer " + token,
-      },
-    }).then((res) => {
-      console.log("this is the experience data", res.data);
-      setDataExperience(res.data);
-      setIsLoading(false);
-    });
-  }
+    axios
+      .get(`http://localhost:4000/users/${userId}/experience`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => {
+        console.log("this is the experience data", res.data);
+        setDataExperience(res.data);
+        setIsLoading(false);
+      });
+  };
 
   //call put api
   const handleSave = (educationId: string) => {
     console.log("this is the educationId", educationId);
     //call api to save
     setIsLoading(true);
-    fetch(
-      `http://localhost:4000/users/${userId}/experience/${educationId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization" : "Bearer " + token,
-
-        },
-        body: JSON.stringify(experienceNewData),
-      }
-    ).then((response) => {
+    fetch(`http://localhost:4000/users/${userId}/experience/${educationId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify(experienceNewData),
+    }).then((response) => {
       console.log("this is response", response);
       if (response.ok) {
-        setIsLoading(false)
-        setDataExperience(dataExperience.map((data: any) => {
-          if (data._id === educationId) {
-            return {
-              ...data,
-              ...experienceNewData,
-            };
-          }
-          return data;
-        }
-        ));
+        setIsLoading(false);
+        setDataExperience(
+          dataExperience.map((data: any) => {
+            if (data._id === educationId) {
+              return {
+                ...data,
+                ...experienceNewData,
+              };
+            }
+            return data;
+          })
+        );
         onClose();
         alert("Save successful!");
       } else {
@@ -129,22 +130,20 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const handleDelete = (experienceId: string) => {
     setIsLoading(true);
     console.log("this is the experienceId", experienceId);
-    fetch(
-      `http://localhost:4000/users/${userId}/experience/${experienceId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization" : "Bearer " + token,
-
-        },
-      }
-    ).then((response) => {
+    fetch(`http://localhost:4000/users/${userId}/experience/${experienceId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    }).then((response) => {
       console.log("this is response", response);
       if (response.ok) {
         onClose();
         setIsLoading(false);
-        setDataExperience(dataExperience.filter((data: any) => data._id !== experienceId));
+        setDataExperience(
+          dataExperience.filter((data: any) => data._id !== experienceId)
+        );
         alert("Delete successful!");
       } else {
         alert("Delete failed!");
@@ -159,8 +158,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization" : "Bearer " + token,
-
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify([experienceNewData]),
     }).then((response) => {
@@ -176,7 +174,15 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     });
   };
 
-
+  const formDate = (date: any) => {
+    return date
+      ? new Date(date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "Present";
+  };
 
   return (
     <Box>
@@ -185,105 +191,94 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         <IconButton
           aria-label="Add experience"
           icon={<AddIcon />}
-          onClick={
-            () => {
-              setIsEdit(false);
-              setIsAdd(true);
-              onOpen();
-            }
-          }
+          onClick={() => {
+            setIsEdit(false);
+            setIsAdd(true);
+            onOpen();
+          }}
         />
       </Flex>
 
-      {
-        isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            {
-              dataExperience.map((data: any) => {
-                return (
-                  <Box borderWidth="1px" borderRadius="lg" p={4} mb={4} mt={2}>
-                    <Flex
-                      justifyContent="space-between"
-                      alignItems="center"
-                      mb={2}
-                      mt={2}
-                    >
-                      <Heading size="md">{data.title}</Heading>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {dataExperience.map((data: any) => {
+            return (
+              <Box
+                borderWidth="1px"
+                borderRadius="lg"
+                p={4}
+                mb={4}
+                _hover={{ bg: "gray.50" }}
+              >
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mb={4}
+                  mt={2}
+                >
+                  <Box flex="1">
+                    <Heading size="md">{data.title}</Heading>
+                  </Box>
+                  <Flex alignItems="center">
+                    <Tooltip label="Edit experience" aria-label="A tooltip">
                       <IconButton
                         aria-label="Edit experience"
+                        mr={2}
                         icon={<EditIcon />}
                         onClick={() => {
-                          // i should pass the id here
                           handleEdit(data);
                           setIsEdit(true);
                           setIsAdd(false);
                           onOpen();
                         }}
                       />
+                    </Tooltip>
+                    <Tooltip label="Delete experience" aria-label="A tooltip">
                       <IconButton
                         aria-label="Delete experience"
                         icon={<DeleteIcon />}
                         onClick={() => handleDelete(data._id)}
                       />
-                    </Flex>
-                    <Text fontSize="sm" mb={2}>
-                      Hospital: {data.company}
+                    </Tooltip>
+                  </Flex>
+                </Flex>
+                <Box pl={3}>
+                  <Flex alignItems="center" mb={2}>
+                    <Icon as={MdBusiness} mr={2} />
+                    <Text fontSize="sm" fontWeight="bold">
+                      {data.company || "No Hospital Information"}
                     </Text>
-                    <Text fontSize="sm">Location: {data.location}</Text>
-                    <Text fontSize="sm">Description: {data.description}</Text>
+                  </Flex>
+                  <Flex alignItems="center" mb={2}>
+                    <Icon as={MdLocationOn} mr={2} />
                     <Text fontSize="sm">
-                      Duration: 
-                      {new Date(data.startDate).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })} - {new Date(data.endDate).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {data.location || "No Location Specified"}
                     </Text>
-                  </Box>
-                );
-              })
-            }
-          </>
-        )
-      }
-
-      {/* {experienceData.map((data: any) => {
-        return (
-          <Box borderWidth="1px" borderRadius="lg" p={4} mb={4} mt={2}>
-            <Flex
-              justifyContent="space-between"
-              alignItems="center"
-              mb={2}
-              mt={2}
-            >
-              <Heading size="md">{data.title}</Heading>
-              <IconButton
-                aria-label="Edit experience"
-                icon={<EditIcon />}
-                onClick={() => {
-                  // i should pass the id here
-                  handleEdit(data);
-                  setIsEdit(true);
-                  setIsAdd(false);
-                  onOpen();
-                }}
-              />
-              <IconButton
-                aria-label="Delete experience"
-                icon={<DeleteIcon />}
-                onClick={() => handleDelete(data._id)}
-              />
-            </Flex>
-            <Text fontSize="sm" mb={2}>
-              Hospital: {data.company}
-            </Text>
-            <Text fontSize="sm">Location: {data.location}</Text>
-            <Text fontSize="sm">Description: {data.description}</Text>
-            <Text fontSize="sm">
-              Duration: 
-              {new Date(data.startDate).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })} - {new Date(data.endDate).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
-            </Text>
-          </Box>
-        );
-      })} */}
+                  </Flex>
+                  <Flex alignItems="center" mb={2}>
+                    <Icon as={MdDescription} mr={2} />
+                    <Text
+                      fontSize="sm"
+                      fontStyle={data.description ? "normal" : "italic"}
+                    >
+                      {data.description || "No Description Provided"}
+                    </Text>
+                  </Flex>
+                  <Flex alignItems="center" mb={2}>
+                    <Icon as={FaCalendarAlt} mr={2} />
+                    <Text fontSize="sm">
+                      Duration: {formDate(data.startDate)} -{" "}
+                      {formDate(data.endDate)}
+                    </Text>
+                  </Flex>
+                </Box>
+              </Box>
+            );
+          })}
+        </>
+      )}
       {
         <CustomModal
           isOpen={isOpen}

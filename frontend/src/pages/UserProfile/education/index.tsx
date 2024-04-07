@@ -11,6 +11,8 @@ import {
   Input,
   Textarea,
   Button,
+  Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { EditIcon, AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import CustomModal from "../../../components/customModel";
@@ -86,17 +88,18 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
       console.log("this is response", response);
       if (response.ok) {
         setIsLoading(false);
-        setMedicalEducation((prevState: any[]) => prevState.map((data: any) => {
-          if(data._id === educationId) {
-            return {
-              ...data,
-              ...addEducationData
+        setMedicalEducation((prevState: any[]) =>
+          prevState.map((data: any) => {
+            if (data._id === educationId) {
+              return {
+                ...data,
+                ...addEducationData,
+              };
+            } else {
+              return data;
             }
-          } else {
-            return data;
-          }
-        }
-        ))
+          })
+        );
         onClose();
         alert("Save successful!");
       } else {
@@ -172,172 +175,109 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
     setSelectedData(data);
   };
 
+  const colorTitle = useColorModeValue("blue.600", "blue.300");
+  const color = useColorModeValue("gray.600", "gray.400");
   return (
     <>
       <Box>
-        <Flex
-          alignItems="center"
-          justifyContent="space-between"
-          mb="auto"
-          mt={2}
-        >
-          <Heading as="h2" size="md" mb={2}>
+        <Flex alignItems="center" justifyContent="space-between" mb={4}>
+          <Heading as="h2" size="md">
             Medical Education
           </Heading>
           <IconButton
             aria-label="Add Medical Education"
             icon={<AddIcon />}
-            onClick={() => {
-              setIsEdit(false);
-              setIsAdd(true);
-              onOpen();
-            }}
+            onClick={() => onOpen()}
           />
         </Flex>
         {isLoading ? (
           <LoadingSpinner />
         ) : (
           <>
-            {/* {medicalEducationData.map((data: any) => {
-              return (
-                <Box borderWidth="1px" borderRadius="lg" p={2} mb={4} mt={4}>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={2}
-                  >
-                    <Heading size="md">{data.medicalDegree}</Heading>
-                    <IconButton
-                      aria-label="Edit Medical Education"
-                      icon={<EditIcon />}
-                      onClick={() => {
-                        // i should pass the id here
-                        handleEdit(data._id, data);
-                        setIsEdit(true);
-                        setIsAdd(false);
-                        onOpen();
-                      }}
-                    />
-                    <IconButton
-                      aria-label="Delete Medical Education"
-                      icon={<DeleteIcon />}
-                      onClick={() => {
-                        console.log("this is the data", data);
-                        handleDelete(data.userId, data.id);
-                      }}
-                    />
-                  </Flex>
-                  <Box>
-                    <Text fontSize="sm" mb={2}>
-                      Medical School: {data.medicalSchool}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      Residency: {data.residency}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      Fellowship: {data.fellowship}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      {data.boardCertification}
-                    </Text>
-                  </Box>
-                </Box>
-              );
-            })} */}
             {medicalEducation.map((data: any) => {
               return (
-                <Box borderWidth="1px" borderRadius="lg" p={2} mb={4} mt={4}>
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={2}
-                  >
-                    <Heading size="md">{data.medicalDegree}</Heading>
-                    <IconButton
-                      aria-label="Edit Medical Education"
-                      icon={<EditIcon />}
-                      onClick={() => {
-                        // i should pass the id here
-                        handleEdit(data._id, data);
-                        setIsEdit(true);
-                        setIsAdd(false);
-                        onOpen();
-                      }}
-                    />
-                    <IconButton
-                      aria-label="Delete Medical Education"
-                      icon={<DeleteIcon />}
-                      onClick={() => {
-                        console.log("this is the data in delete", data);
-                        console.log(
-                          "this is the data.userId in delete>>>",
-                          data._id
-                        );
-                        handleDelete(data._id);
-                      }}
-                    />
+                <Box
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  p={4}
+                  mb={4}
+                  _hover={{ bg: "gray.50" }}
+                >
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Box flex="1" pr={4}>
+                      <Heading size="md" mb={2} color={colorTitle}>
+                        {data.medicalDegree}
+                      </Heading>
+                    </Box>
+                    <Flex alignItems="center">
+                      <Tooltip label="Edit Medical Education">
+                        <IconButton
+                          aria-label="Edit Medical Education"
+                          mr={2}
+                          icon={<EditIcon />}
+                          onClick={() => {
+                            handleEdit(data._id, data);
+                            setIsEdit(true);
+                            setIsAdd(false);
+                            onOpen();
+                          }}
+                        />
+                      </Tooltip>
+                      <Tooltip label="Delete Medical Education">
+                        <IconButton
+                          aria-label="Delete Medical Education"
+                          icon={<DeleteIcon />}
+                          onClick={() => {
+                            console.log("this is the data in delete", data);
+                            console.log(
+                              "this is the data.userId in delete>>>",
+                              data._id
+                            );
+                            handleDelete(data._id);
+                          }}
+                        />
+                      </Tooltip>
+                    </Flex>
                   </Flex>
-                  <Box>
-                    <Text fontSize="sm" mb={2}>
-                      Medical School: {data.medicalSchool}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      Residency: {data.residency}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      Fellowship: {data.fellowship}
-                    </Text>
-                    <Text fontSize="sm" mb={2}>
-                      {data.boardCertification}
-                    </Text>
+                  <Box flex="1" pr={4}>
+                    {data.medicalSchool ||
+                    data.residency ||
+                    data.fellowship ||
+                    data.boardCertification ? (
+                      <>
+                        {data.medicalSchool && (
+                          <Text fontSize="sm" mb={2} color={color}>
+                            Medical School: <b>{data.medicalSchool}</b>
+                          </Text>
+                        )}
+                        {data.residency && (
+                          <Text fontSize="sm" mb={2} color={color}>
+                            Residency: <b>{data.residency}</b>
+                          </Text>
+                        )}
+                        {data.fellowship && (
+                          <Text fontSize="sm" mb={2} color={color}>
+                            Fellowship: <b>{data.fellowship}</b>
+                          </Text>
+                        )}
+                        {data.boardCertification && (
+                          <Text fontSize="sm" mb={2} color={color}>
+                            Board Certification:{" "}
+                            <b>{data.boardCertification}</b>
+                          </Text>
+                        )}
+                      </>
+                    ) : (
+                      <Text fontSize="sm" mb={2} color={color}>
+                        No education details available.
+                      </Text>
+                    )}
                   </Box>
                 </Box>
               );
             })}
           </>
         )}
-        {/* {medicalEducationData.map((data: any) => {
-          return (
-            <Box borderWidth="1px" borderRadius="lg" p={2} mb={4} mt={4}>
-              <Flex justifyContent="space-between" alignItems="center" mb={2}>
-                <Heading size="md">{data.medicalDegree}</Heading>
-                <IconButton
-                  aria-label="Edit Medical Education"
-                  icon={<EditIcon />}
-                  onClick={() => {
-                    // i should pass the id here
-                    handleEdit(data._id, data);
-                    setIsEdit(true);
-                    setIsAdd(false);
-                    onOpen();
-                  }}
-                />
-                <IconButton
-                  aria-label="Delete Medical Education"
-                  icon={<DeleteIcon />}
-                  onClick={() => {
-                    console.log("this is the data", data);
-                    handleDelete(data.userId, data.id);
-                  }}
-                />
-              </Flex>
-              <Box>
-                <Text fontSize="sm" mb={2}>
-                  Medical School: {data.medicalSchool}
-                </Text>
-                <Text fontSize="sm" mb={2}>
-                  Residency: {data.residency}
-                </Text>
-                <Text fontSize="sm" mb={2}>
-                  Fellowship: {data.fellowship}
-                </Text>
-                <Text fontSize="sm" mb={2}>
-                  {data.boardCertification}
-                </Text>
-              </Box>
-            </Box>
-          );
-        })} */}
         <CustomModal
           isOpen={isOpen}
           onClose={onClose}

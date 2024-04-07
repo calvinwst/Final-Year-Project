@@ -12,6 +12,10 @@ import {
   Textarea,
   Button,
   Select,
+  Grid,
+  Icon,
+  Badge,
+  Tooltip,
 } from "@chakra-ui/react";
 import CustomModal from "../../../components/customModel";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
@@ -47,25 +51,26 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
   const auth = useContext(AuthContext);
   const token = auth.token;
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchDataSkill();
-  }, [])
+  }, []);
 
-  const fetchDataSkill = ()=>{
-    axios.get(`http://localhost:4000/users/${userId}/skills`, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-    .then((res) => {
-      setDataSkill(res.data);
-      console.log("this is data skill", dataSkill);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }
-  
+  const fetchDataSkill = () => {
+    axios
+      .get(`http://localhost:4000/users/${userId}/skills`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => {
+        setDataSkill(res.data);
+        console.log("this is data skill", dataSkill);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleChange = (event: any) => {
     setSkillData({ ...skillData, [event.target.id]: event.target.value });
     console.log("this is the skill data", skillData);
@@ -78,7 +83,7 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token,
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(skillData),
     }).then((response) => {
@@ -104,7 +109,7 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token,
+        Authorization: "Bearer " + token,
       },
     }).then((response) => {
       console.log("this is response", response);
@@ -133,7 +138,7 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization" : "Bearer " + token,
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(skillData),
     }).then((response) => {
@@ -150,6 +155,20 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
     });
 
     onClose();
+  };
+
+  const SkillBadge = ({ level }: any) => {
+    let colorScheme = "gray";
+    if (level === "Expert") colorScheme = "green";
+    else if (level === "Intermediate") colorScheme = "orange";
+    else if (level === "Beginner") colorScheme = "red";
+    else if (level === "Advanced") colorScheme = "blue";
+
+    return (
+      <Badge colorScheme={colorScheme} p={1}>
+        {level}
+      </Badge>
+    );
   };
 
   return (
@@ -172,72 +191,56 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
               }}
             />
           </Flex>
-          {/* {skillsData.map((data: any) => {
-            return (
-              <Box mt={4} borderWidth="1px" borderRadius="lg" p={4}>
-                <Flex justifyContent="space-between" alignItems="center" mb={2}>
-                  <Heading size="md">{data.name}</Heading>
-                  <IconButton
-                    aria-label="Edit Skill"
-                    icon={<EditIcon />}
-                    onClick={() => {
-                      handleEdit(data);
-                      setIsEdit(true);
-                      setAddSkill(false);
-                      onOpen();
-                    }}
-                  />
-                  <IconButton
-                    aria-label="Delete Skill"
-                    icon={<DeleteIcon />}
-                    onClick={
-                      () => handleDelete(data._id)
-                      // () => handleDelete(data._id)
-                    }
-                  />
-                </Flex>
-                <Text fontSize="sm" mb={2}>
-                  {data.level}
-                </Text>
-              </Box>
-            );
-          })} */}
-          {
-            isLoading ? (
-              <LoadingSpinner />
-            ) : (
-              dataSkill.map((data: any) => {
-                return (
-                  <Box mt={4} borderWidth="1px" borderRadius="lg" p={4}>
-                    <Flex justifyContent="space-between" alignItems="center" mb={2}>
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+              {dataSkill.map((data: any) => (
+                <Box
+                  key={data._id}
+                  mt={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  p={4}
+                  mb={4}
+                  _hover={{ bg: "gray.50" }}
+                >
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Box flex="1">
                       <Heading size="md">{data.name}</Heading>
-                      <IconButton
-                        aria-label="Edit Skill"
-                        icon={<EditIcon />}
-                        onClick={() => {
-                          handleEdit(data);
-                          setIsEdit(true);
-                          setAddSkill(false);
-                          onOpen();
-                        }}
-                      />
-                      <IconButton
-                        aria-label="Delete Skill"
-                        icon={<DeleteIcon />}
-                        onClick={
-                          () => handleDelete(data._id)
-                          // () => handleDelete(data._id)
-                        }
-                      />
+                    </Box>
+                    <Flex alignItems="center">
+                      <Tooltip label="Edit Skill">
+                        <IconButton
+                          aria-label="Edit Skill"
+                          mr={2}
+                          icon={<EditIcon />}
+                          onClick={() => {
+                            handleEdit(data);
+                            setIsEdit(true);
+                            setAddSkill(false);
+                            onOpen();
+                          }}
+                        />
+                      </Tooltip>
+                      <Tooltip label="Delete Skill">
+                        <IconButton
+                          aria-label="Delete Skill"
+                          icon={<DeleteIcon />}
+                          onClick={() => handleDelete(data._id)}
+                        />
+                      </Tooltip>
                     </Flex>
-                    <Text fontSize="sm" mb={2}>
-                      {data.level}
-                    </Text>
-                  </Box>
-                );
-              })
-            )
-          }
+                  </Flex>
+                  <SkillBadge level={data.level} />
+                </Box>
+              ))}
+            </Grid>
+          )}
         </Box>
       )}
 
@@ -282,104 +285,9 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
               type="button"
               text={isEdit ? "Save" : "Add"}
             />
-            {/* <Button onClick={onClose} mr={4}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" onClick={ isEdit ?}>
-              {isEdit ? "Save" : "Add"}
-            </Button> */}
           </Flex>
         }
       />
-
-      {/* {isEdit === true ? (
-        <CustomModal
-          isOpen={isOpen}
-          onClose={onClose}
-          title="Edit Skill"
-          body={
-            <Box>
-              <FormControl id="name">
-                <FormLabel>Name</FormLabel>
-                <Input
-                  type="text"
-                  
-                />
-              </FormControl>
-              <FormLabel>Level</FormLabel>
-              <Select
-                placeholder="Select option"
-                onChange={(event) =>
-                  setSkillData({
-                    ...skillData,
-                    level: event.target.value as SkillProps["level"],
-                  })
-                }
-              >
-                <option value="">Please Select</option>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-                <option value="Expert">Expert</option>
-              </Select>
-            </Box>
-          }
-          footer={
-            <Flex justifyContent="flex-end">
-              <Button onClick={onClose} mr={4}>
-                Cancel
-              </Button>
-              <Button colorScheme="blue" onClick={handleSubmit}>
-                Save
-              </Button>
-            </Flex>
-          }
-        />
-      ) : (
-        <CustomModal
-          isOpen={isOpen}
-          onClose={onClose}
-          title="Add Skill"
-          body={
-            <Box>
-              <FormControl id="name">
-                <FormLabel>Name</FormLabel>
-                <Input
-                  type="text"
-                  defaultValue={skillData.name}
-                  onChange={handleChange}
-                />
-                <FormLabel>Level</FormLabel>
-                <Select
-                  placeholder="Select option"
-                  onChange={(event) =>
-                    setSkillData({
-                      ...skillData,
-                      level: event.target.value as SkillProps["level"],
-                    })
-                  }
-                >
-                  <option value="">Please Select</option>
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                  <option value="Expert">Expert</option>
-                </Select>
-              </FormControl>
-            </Box>
-          }
-          footer={
-            <Flex justifyContent="flex-end">
-              <Button onClick={onClose} mr={4}>
-                Cancel
-              </Button>
-              <Button colorScheme="blue" onClick={handleAdd}>
-                Add
-              </Button>
-            </Flex>
-          }
-        />
-      )} */}
     </>
   );
 };
