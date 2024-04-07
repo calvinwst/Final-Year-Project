@@ -13,6 +13,7 @@ import {
   Button,
   Tooltip,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { EditIcon, AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import CustomModal from "../../../components/customModel";
@@ -47,6 +48,7 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const auth = useContext(AuthContext);
   const token = auth.token;
+  const toast = useToast();
 
   //Call Get api to get the data for education user
 
@@ -101,9 +103,19 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
           })
         );
         onClose();
-        alert("Save successful!");
+        toast({
+          title: "Save successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Save failed!");
+        toast({
+          title: "Save failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
     onClose();
@@ -126,9 +138,19 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
       if (response.ok) {
         onClose();
         setIsLoading(false);
-        alert("Add successful!");
+        toast({
+          title: "Add successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Add failed!");
+        toast({
+          title: "Add failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
     onClose();
@@ -162,9 +184,19 @@ const MedicalEducation: React.FC<MedicalEducationDataProps> = ({
         setMedicalEducation(
           medicalEducation.filter((data: any) => data._id !== educationId)
         );
-        alert("Delete successful!");
+        toast({
+          title: "Delete successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Delete failed!");
+        toast({
+          title: "Delete failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
     onClose();

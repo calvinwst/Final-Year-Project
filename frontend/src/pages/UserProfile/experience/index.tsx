@@ -12,6 +12,7 @@ import {
   FormLabel,
   Tooltip,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
 import { MdBusiness, MdLocationOn, MdDescription } from "react-icons/md";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -48,6 +49,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     startDate: "",
     endDate: "",
   });
+  const toast = useToast();
 
   //call get api to get experience data
   useEffect(() => {
@@ -118,9 +120,21 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           })
         );
         onClose();
-        alert("Save successful!");
+        toast({
+          title: "Experience Updated",
+          description: "Experience has been updated successfully!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Save failed!");
+        toast({
+          title: "Experience Update Failed",
+          description: "Experience update failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
     onClose();
@@ -144,9 +158,19 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         setDataExperience(
           dataExperience.filter((data: any) => data._id !== experienceId)
         );
-        alert("Delete successful!");
+        toast({
+          title: "Delete successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Delete failed!");
+        toast({
+          title: "Delete failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
   };

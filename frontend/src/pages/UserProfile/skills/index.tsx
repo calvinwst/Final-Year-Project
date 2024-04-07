@@ -16,6 +16,7 @@ import {
   Icon,
   Badge,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import CustomModal from "../../../components/customModel";
 import { EditIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
@@ -50,6 +51,7 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
   const [dataSkill, setDataSkill] = useState<any | []>([]);
   const auth = useContext(AuthContext);
   const token = auth.token;
+  const toast = useToast();
 
   useEffect(() => {
     fetchDataSkill();
@@ -95,9 +97,19 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       if (response.ok) {
         onClose();
         setIsLoading(false);
-        alert("Edit successful!");
+        toast({
+          title: "Edit successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Edit failed!");
+        toast({
+          title: "Edit failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
   };
@@ -117,9 +129,20 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       if (response.ok) {
         onClose();
         setIsLoading(false);
-        alert("Delete successful!");
+        toast({
+          title: "Delete successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        
+        })
       } else {
-        alert("Delete failed!");
+        toast({
+          title: "Delete failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
     onClose();
@@ -147,10 +170,19 @@ const SkillSection: React.FC<SkillDataProps> = ({ skillsData, userId }) => {
       if (response.ok) {
         onClose();
         setIsLoading(false);
-
-        alert("Save successful!");
+        toast({
+          title: "Save successful!",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
-        alert("Save failed!");
+        toast({
+          title: "Save failed!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
 

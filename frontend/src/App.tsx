@@ -130,7 +130,6 @@ function App() {
         <Route path="/research/:researchId" element={<ResearchDetails />} />
         <Route path="/community/:communityId" element={<CommunityDetails />} />
         <Route path="/network/:networkId" element={<NetworkDetails />} />
-        {/* <Route path="/userfeed/:userFeedid" element={<UserFeedDetails />} /> */}
         {/*Public Route*/}
 
         {/* Protected Routes */}
@@ -161,14 +160,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/communityProfile/:communityId"
-          element={
-            <ProtectedRoute isLogged={isLogged} loading={loading}>
-              <CommunityDetails />
-            </ProtectedRoute>
-          }
-        /> */}
+
         <Route
           path="/chat"
           element={
@@ -185,14 +177,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/research/:researchId"
-          element={
-            <ProtectedRoute isLogged={isLogged} loading={loading}>
-              <ResearchDetails />
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path="/userProfile/"
           element={

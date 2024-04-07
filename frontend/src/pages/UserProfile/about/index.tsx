@@ -17,6 +17,7 @@ import {
   GridItem,
   Input,
   FormLabel,
+  useToast,
 } from "@chakra-ui/react";
 import {
   FaUser,
@@ -50,6 +51,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editedAbout, setEditedAbout] = useState(profileData.about);
   const [expanded, setExpanded] = useState(false);
+  const toast = useToast();
 
   console.log("this is the profileData: ", profileData);
   const handleAboutChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -75,6 +77,13 @@ const AboutSection: React.FC<AboutSectionProps> = ({
     })
       .then((response) => {
         if (response.ok) {
+          toast({
+            title: "Profile updated.",
+            description: "Your profile has been updated successfully.",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
           return response.json(); // This returns a Promise
         } else {
           throw new Error("Request failed!");
@@ -152,7 +161,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
                       textAlign="justify"
                       isTruncated={!expanded}
                     >
-                      <Icon as={MdInfo} mr={2} />{`About: ${editedAbout}`}
+                      <Icon as={MdInfo} mr={2} />
+                      {`About: ${editedAbout}`}
                     </Text>
                   </VStack>
                   <Button
@@ -163,23 +173,6 @@ const AboutSection: React.FC<AboutSectionProps> = ({
                     {expanded ? "Show less" : "Show more"}
                   </Button>
                 </Box>
-
-                {/* <Box flex="1" overflow="hidden">
-                  <Text
-                    fontWeight="semibold"
-                    textAlign="justify"
-                    isTruncated={!expanded}
-                  >
-                    {`About: ${editedAbout}`}
-                  </Text>
-                </Box>
-                <Button
-                  colorScheme="blue"
-                  size="sm"
-                  onClick={() => setExpanded(!expanded)}
-                >
-                  {expanded ? "Show less" : "Show more"}
-                </Button> */}
               </GridItem>
             </>
           ) : (

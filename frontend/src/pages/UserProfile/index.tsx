@@ -15,6 +15,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 import AboutSection from "./about";
 import EducationSection from "./education";
@@ -31,6 +32,7 @@ const UserProfile = () => {
   const auth = useContext(AuthContext);
   const userId = auth.userId;
   const token = auth.token;
+  const toast = useToast();
 
   const [user, setUserData] = useState({
     username: "",
@@ -72,9 +74,23 @@ const UserProfile = () => {
             profileImgPath: res.data.profile.profileImgPath,
           },
         }));
+        toast({
+          title: "Profile picture updated.",
+          description: "Your profile picture has been updated successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error updating image", err);
+        toast({
+          title: "Error updating profile picture.",
+          description: "An error occurred while updating your profile picture.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       });
   };
 
