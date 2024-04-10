@@ -13,7 +13,6 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
-// import { EmailIcon } from "@chakra-ui/icons/dist/Email";
 import { EmailIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { ca } from "date-fns/locale";

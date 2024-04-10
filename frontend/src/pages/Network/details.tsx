@@ -31,7 +31,6 @@ const NetworkDetails = () => {
   const { networkId } = useParams<{ networkId: string }>();
   const [loading, setLoading] = React.useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState("");
-  //   const [connectionRequestId, setConnectionRequestId] = useState<any[]>([]);
   const [connectionRequestId, setConnectionRequestId] = useState<any>("");
   const [networkData, setNetworkData] = React.useState<any>({
     username: "",
@@ -55,22 +54,15 @@ const NetworkDetails = () => {
       })
       .then((response) => {
         const pendingRequests = response.data.pendingRequests;
-        // console.log("Pending requests:", pendingRequests);
-
         // Check if the current user has a pending request to the profile
         const pendingRequest = pendingRequests.find(
           (request: any) => request.requester._id.toString() === networkId
         );
-        // console.log("Pending request after the compare>>>", pendingRequest);
         console.log("Pending request id: before --", pendingRequest._id);
         if (pendingRequest) {
           setConnectionRequestId(pendingRequest._id);
           console.log("connectionRequestIdid: after --", connectionRequestId);
         }
-        // console.log("Pending request id:", connectionRequestId);
-
-        // Assuming response.data is an array of objects
-        //const pendingRequest = response.data.
       })
       .catch((err) => {
         console.log("this is error in fetchAndCheckPendingRequests >>>> ", err);
@@ -78,21 +70,6 @@ const NetworkDetails = () => {
   };
 
   useEffect(() => {
-    // axios
-    //   .get(`http://localhost:4000/users/${networkId}`, {
-    //     headers: {
-    //       Authorization: "Bearer " + localStorage.getItem("token"),
-    //     },
-    //   })
-    //   .then((response) => {
-    //     console.log("this is response>>>", response.data);
-    //     setLoading(false);
-    //     setNetworkData(response.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log("this is error", err);
-    //   });
-
     fetchUserDetail();
     fetchAndCheckPendingRequests();
   }, [networkId, userId]);
@@ -179,7 +156,7 @@ const NetworkDetails = () => {
           });
         })
         .catch((err) => {
-        //   console.log("this is error in handleConnect >>>> ", err);
+          //   console.log("this is error in handleConnect >>>> ", err);
           console.log("this is response.data.message >>>> ", err.response.data);
           toast({
             title: `Error sending connection request. ${err.response.data.message}`,
@@ -212,7 +189,7 @@ const NetworkDetails = () => {
           duration: 3000,
           isClosable: true,
         });
-        navigate("/network")
+        navigate("/network");
       })
       .catch((err) => {
         console.log("this is error in handleAccept >>>> ", err);
@@ -263,7 +240,7 @@ const NetworkDetails = () => {
   return (
     <>
       {/* <Text>Network Details</Text> */}
-      <Flex justifyContent="center" alignItems="center" height="100vh" >
+      <Flex justifyContent="center" alignItems="center" height="100vh">
         <Box
           p={5}
           maxW="container.md"
@@ -274,13 +251,16 @@ const NetworkDetails = () => {
           mt={16}
         >
           <VStack spacing={4} align="stretch">
-            <Flex justifyContent="center" alignItems="center">
+            <Flex
+              justifyContent="space-around"
+              alignItems="center"
+              width="100%"
+            >
               <HStack spacing={4}>
                 <Avatar
                   src={profileImgPath}
                   size="xl"
-                  name={networkData.username}
-                  
+                  name={`${networkData.profile.firstName} ${networkData.profile.lastName}`}
                 />
                 <VStack align="start">
                   <Heading as="h2" size="lg">
@@ -290,41 +270,36 @@ const NetworkDetails = () => {
                   <Text color="gray.500">{networkData.profile.location}</Text>
                 </VStack>
               </HStack>
-              {connectionStatus === "connected" ? (
+              {/* Conditional rendering for buttons, each button can be styled individually */}
+              {connectionStatus === "connected" && (
                 <Button
-                  color="blue.500"
+                  colorScheme="blue"
                   variant="outline"
                   onClick={() => {
-                    /* Your click handler code */
+                    /* click handler code */
                   }}
                 >
                   Connected
                 </Button>
-              ) : connectionStatus === "accept" ? (
+              )}
+              {connectionStatus === "accept" && (
                 <>
-                  <Button
-                    colorScheme="blue"
-                    onClick={() => {
-                      handleAccept();
-                    }}
-                  >
+                  <Button colorScheme="blue" onClick={handleAccept}>
                     Accept
                   </Button>
                   <Button
                     colorScheme="red"
-                    onClick={() => {
-                      handleReject();
-                    }}
+                    onClick={handleReject}
+                    ml={2} // Add margin left to separate buttons
                   >
                     Reject
                   </Button>
                 </>
-              ) : (
+              )}
+              {connectionStatus === "request" && (
                 <Button
                   colorScheme="blue"
-                  onClick={() => {
-                    handleConnect(networkData._id);
-                  }}
+                  onClick={() => handleConnect(networkData._id)}
                 >
                   Connect
                 </Button>

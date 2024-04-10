@@ -15,10 +15,13 @@ import { AuthContext } from "../../context/authContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { set } from "date-fns";
 
+
+
 const Notification = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { userId } = useContext(AuthContext);
+  
 
   useEffect(() => {
     fetchNotifications();
@@ -40,14 +43,15 @@ const Notification = () => {
     setLoading(false);
   };
 
-  console.log("this is notifications >>> ", notifications);
-
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      axios.patch(
+      await axios.patch(
         `http://localhost:4000/users/${userId}/notifications/${notificationId}/read`,
+        {},
         {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       setNotifications(notifications.filter((n) => n._id !== notificationId));
@@ -100,6 +104,7 @@ const Notification = () => {
                     ml="auto"
                     onClick={() => {
                       handleMarkAsRead(notification._id);
+
                     }}
                   >
                     Mark as Read

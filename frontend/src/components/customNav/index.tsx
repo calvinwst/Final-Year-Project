@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -20,11 +20,21 @@ import { CustomStylesNav } from "./styles";
 import { Link as RouterLink } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { IoPeopleOutline } from "react-icons/io5";
+import NotificationBubble from "./NotificationBubble";
 import axios from "axios";
+
+interface Notification {
+  message: string;
+  link: string;
+  read: boolean;
+  _id: string;
+}
 
 const CustomNav = () => {
   const isNotSmallerScreen = useBreakpointValue({ base: false, md: true });
   const [imageFilePath, setImageFilePath] = React.useState("");
+  // const [notification, setNotification] = useState([]);
+  const [notification, setNotification] = useState<Notification[]>([]);
   const auth = useContext(AuthContext);
   const userId = auth.userId;
 
@@ -32,6 +42,7 @@ const CustomNav = () => {
 
   useEffect(() => {
     fetchUserDetail();
+    fetchNotifications();
   }, [userId]);
 
   const fetchUserDetail = async () => {
@@ -48,10 +59,24 @@ const CustomNav = () => {
       console.log("Error fetching user details", err);
     }
   };
-  // console.log("this is imageFilePath", imageFilePath);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/users/${userId}/notifications`,
+        {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        }
+      );
+      setNotification(response.data);
+    } catch (err) {
+      console.log("Error fetching notifications", err);
+    }
+  };
+
+  const unreadNotifications = notification.filter((n) => !n.read);
 
   const filePath = `http://localhost:4000/${imageFilePath}`;
-  // console.log("this is filePath >>> ", filePath);
 
   return (
     <>
@@ -83,7 +108,7 @@ const CustomNav = () => {
                 Research/Case Listing
               </Box>
               <Box as={RouterLink} to="/notification">
-                <BellIcon /> Notification
+                <NotificationBubble count={unreadNotifications.length} />
               </Box>
               <Flex as={RouterLink} to="/network" alignItems="center">
                 <IoPeopleOutline />

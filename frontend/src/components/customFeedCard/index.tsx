@@ -35,10 +35,13 @@ import { BiLike, BiChat, BiShare, BiSolidLike } from "react-icons/bi";
 import { AuthContext } from "../../context/authContext";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import axios from "axios";
-import { ca } from "date-fns/locale";
+import CustomModal from "../../components/customModel";
 import { Link } from "react-router-dom";
 import { RiEdit2Fill } from "react-icons/ri";
-import jwt_decode from "jwt-decode"; 
+import Select from "react-select";
+import { io, Socket } from "socket.io-client";
+
+import jwt_decode from "jwt-decode";
 
 interface UserProfile {
   profileImgPath: string;
@@ -101,7 +104,10 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   const auth = useContext(AuthContext);
   const userId = auth.userId;
   const [isLike, setIsLike] = useState(false);
-
+  const [isShare, setIsShare] = useState(false);
+  const [connections, setConnections] = useState([]);
+  const [selectedConnections, setSelectedConnections] = useState([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const toast = useToast();
   const calTimeDiff = (createdAt: Date) => {
     const date1 = new Date(createdAt);
@@ -118,13 +124,22 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   };
 
   useEffect(() => {
-    console.log("UserId >>>", userId);
     if (userId !== undefined) {
       if (userIncludeInLike()) {
         setIsLike(true);
       }
     }
+    fetchUserProfileConnection();
   }, [userId]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:4000");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
 
   const LikePost = async () => {
     console.log("this is _id >>>", _id);
@@ -268,6 +283,50 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
 
+  const fetchUserProfileConnection = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/users/${userId}/connections`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      console.log("this is the response :: ", response.data);
+      setConnections(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const option = connections.map((connection: any) => {
+    return { value: connection._id, label: connection.username };
+  });
+
+  const handleShareChange = (selectOptions: any) => {
+    setSelectedConnections(selectOptions);
+    console.log("this is the selected connections >>>", selectOptions);
+  };
+
+  const sharePost = () => {
+    if (socket && userId) {
+      socket.emit("sharePost", {
+        postId: `http://localhost:3000/userfeed/${_id}`,
+        senderId: userId,
+        receiverId: selectedConnections.map(
+          (connection: any) => connection.value
+        ),
+      });
+      toast({
+        title: "Post shared successfully to connections chatbox",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   // console.log("this is the like >>>", like);
   console.log("This is the isLike >>>", isLike);
 
@@ -345,9 +404,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
         </Box>
         <Flex p={5} borderTopWidth="1px" justifyContent="space-between">
           <Button
-            // leftIcon={isLike ? <BiSolidLike /> : <BiLike />}
-            // variant="ghost"
-            // onClick={isLike ? unLike : LikePost}
             leftIcon={isLike ? <BiSolidLike /> : <BiLike />}
             variant="ghost"
             onClick={isLike ? unLike : LikePost}
@@ -363,7 +419,13 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
           >
             Comment
           </Button>
-          <Button leftIcon={<BiShare />} variant="ghost" onClick={() => {}}>
+          <Button
+            leftIcon={<BiShare />}
+            variant="ghost"
+            onClick={() => {
+              setIsShare(true);
+            }}
+          >
             Share
           </Button>
         </Flex>
@@ -441,6 +503,49 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
           </ModalBody>
         </ModalContent>
       </Modal>
+      {
+        //Modal to share the link of the post to selected connections
+        isShare ? (
+          <CustomModal
+            isOpen={isShare}
+            onClose={() => setIsShare(false)}
+            title="Share Post"
+            body={
+              <>
+                <FormControl id="share">
+                  <FormLabel>Share with</FormLabel>
+                  <Select
+                    isMulti
+                    options={option}
+                    onChange={handleShareChange}
+                  />
+                </FormControl>
+              </>
+            }
+            footer={
+              <>
+                <Button
+                  colorScheme="red"
+                  onClick={() => setIsShare(false)}
+                  mr={2}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  onClick={() => {
+                    // console.log("this is the selected connections >>>", selectedConnections);
+                    sharePost();
+                    setIsShare(false);
+                  }}
+                >
+                  Share
+                </Button>
+              </>
+            }
+          />
+        ) : null
+      }
     </>
   );
 };

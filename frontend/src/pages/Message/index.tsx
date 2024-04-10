@@ -10,6 +10,7 @@ import {
   Avatar,
   FormControl,
   Divider,
+  Link,
 } from "@chakra-ui/react";
 import { io, Socket } from "socket.io-client";
 import { AuthContext } from "../../context/authContext";
@@ -34,6 +35,7 @@ export interface User {
 }
 
 export interface Messages {
+  msg: any;
   _id: string;
   chat: Chat;
   sender: User;
@@ -63,9 +65,6 @@ const Message: React.FC<MessageProps> = ({
   addNewMessage,
 }) => {
   console.log("this is chatImgPath >>> ", chatImgPath);
-  // console.log("this is message in child>>>>>> ", message);
-  // console.log("this is users >>>>>> ", users);
-  // console.log("this is _id >>>>>> ", _id);
   const [currentMessage, setCurrentMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userId } = React.useContext(AuthContext);
@@ -74,15 +73,6 @@ const Message: React.FC<MessageProps> = ({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  // useEffect(() => {
-  //   const newSocket = io("http://localhost:4000");
-  //   setSocket(newSocket);
-
-  //   return () => {
-  //     newSocket.close();
-  //   };
-  // }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -98,13 +88,6 @@ const Message: React.FC<MessageProps> = ({
       setCurrentMessage("");
     }
   };
-
-  //   let avatarUrl = `http://localhost:4000/${users[0].profile.profileImgPath}`;
-
-  // const groupChatMessage = message.find((msg) => msg.chat?.isGroupChat);
-  // if (groupChatMessage) {
-  //   avatarUrl = `http://localhost:4000/${groupChatMessage.chat?.chatImgPath}`;
-  // }
 
   const otherUser = users.find((user) => user._id !== userId);
 
@@ -142,7 +125,6 @@ const Message: React.FC<MessageProps> = ({
                     </>
                   ) : (
                     <>
-                      {/* {users[0].profile.firstName} {users[0].profile.lastName}{" "} */}
                       {otherUser?.profile.firstName}{" "}
                       {otherUser?.profile.lastName}{" "}
                     </>
@@ -173,6 +155,7 @@ const Message: React.FC<MessageProps> = ({
                   px={4}
                   py={3}
                   rounded="lg"
+                  // overflow="hidden"
                 >
                   {msg.sender._id !== userId && (
                     <Avatar
@@ -182,7 +165,20 @@ const Message: React.FC<MessageProps> = ({
                       mr={4}
                     />
                   )}
-                  <Text fontSize="sm">{msg.content}</Text>
+                  <Text
+                    fontSize="sm"
+                    whiteSpace="nowrap"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                  >
+                    {msg.content.startsWith("http:") ? (
+                      <Link href={msg.content} isExternal>
+                        {msg.content}
+                      </Link>
+                    ) : (
+                      msg.content
+                    )}
+                  </Text>
                 </Flex>
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   {msg.sender.profile.firstName} {msg.sender.profile.lastName}

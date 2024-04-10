@@ -31,7 +31,14 @@ import ForgetPassword from "./pages/Login/ForgetPassword";
 import ResetPassword from "./pages/Login/ResetPassword";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Setting from "./pages/Setting";
+import axios from "axios";
 
+interface INotification {
+  _id: string;
+  message: string;
+  read: boolean;
+  // ... other properties of notifications
+}
 function App() {
   const [isAuth, setIsAuth] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
@@ -39,19 +46,10 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState("");
   const [userId, setUserId] = useState("");
+  const [notification, setNotification] = useState<INotification[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // to check if is logged in if not denied access
-  // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token");
-  //   if (!isLogged) {
-  //     navigate("/login");
-  //   }
-  // }, [isLogged, navigate]);
-
-  //this is cause the problem of not allow to direct to sign-up page when not logged in and also when refresh the page
-  // it cause the page to go back to login page but the navbar show the tab and allow user to access the page
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUserId = localStorage.getItem("userId");
@@ -103,8 +101,24 @@ function App() {
     console.log("this is userId in storeUserId", userId);
   }, []);
 
-  // console.log("this is the token in app >>", token);
-  // console.log("this is the userId in app >>", userId);
+  const markNotificationAsRead = async (notificationId: string) => {
+    try {
+      await axios.patch(
+        `http://localhost:4000/users/${userId}/notifications/${notificationId}/read`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setNotification(notification.filter((n) => n._id !== notificationId));
+      console.log("Notification marked as read");
+    } catch (err) {
+      console.error("Error marking notification as read", err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -115,6 +129,9 @@ function App() {
         logout: logout,
         storeToken: storeToken,
         storeUserId: storeUserId,
+        notifications: notification,
+        setNotifications: setNotification,
+        markNotificationAsRead: markNotificationAsRead,
       }}
     >
       <CustomNav />
