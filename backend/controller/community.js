@@ -323,26 +323,6 @@ exports.addPost = (req, res) => {
       });
     });
 
-  // Community.findByIdAndUpdate(req.params.id, {
-  //   $push: {
-  //     communityFeed: {
-  //       user: req.body.user,
-  //       content: req.body.content,
-  //     },
-  //   },
-  // })
-  //   .then((community) => {
-  //     res.status(201).json({
-  //       message: "Post added successfully!",
-  //       community: community,
-  //     });
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //     res.status(400).json({
-  //       error: error,
-  //     });
-  //   });
 };
 
 //Update post to community specific community id

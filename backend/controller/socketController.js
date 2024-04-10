@@ -10,14 +10,6 @@ const socketController = (io) => {
       try {
         const { chatId, content, senderId } = data;
         console.log("this is the data: ", data);
-        // if(!chatId){
-        //   //create new chat wihtout the chatname
-        //   const chat = await Chat.create({
-        //     isGroupChat: false,
-        //     // users: [senderId],
-        //     users: [senderId],
-        //   });
-        // }
         const chat = await Chat.findById(chatId);
         const message = await Message.create({
           chat: chatId,
@@ -61,7 +53,6 @@ const socketController = (io) => {
         const chat = await Chat.create({
           isGroupChat: false,
           users: [senderId, receiverId],
-          // chatName: null,
           chatName: ""
         });
 

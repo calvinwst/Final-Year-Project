@@ -48,10 +48,6 @@ exports.createResearch = (req, res) => {
   // let researcher = req.userId; // Assuming you have user ID from authentication
   let filePath = req.files && req.files.file ? req.files.file[0].path : null;
   let imagePath = req.files && req.files.image ? req.files.image[0].path : null;
-  console.log("this is the file path: ", filePath);
-  console.log("this is the image path: ", imagePath);
-  console.log("this si the tag: ", tags);
-  // If 'tag' is a stringified array, parse it. Otherwise, use it as is.
   let parsedTags;
   try {
     parsedTags = JSON.parse(tags);
@@ -82,29 +78,6 @@ exports.createResearch = (req, res) => {
       });
     });
 };
-
-// exports.createResearch = (req, res) => {
-//   Research.create({
-//     title: req.body.title,
-//     description: req.body.description,
-//     researcher: req.body.researcher,
-//     publicationDate: req.body.publicationDate,
-//     tag: req.body.tag,
-//   })
-//     .then((newResearch) => {
-//       console.log(newResearch);
-//       res.status(201).json({
-//         message: "Research created successfully!",
-//         research: newResearch,
-//       });
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       res.status(400).json({
-//         error: error,
-//       });
-//     });
-// };
 
 exports.updateResearch = (req, res) => {
   // const { title, description, publicationDate, tag } = req.body;

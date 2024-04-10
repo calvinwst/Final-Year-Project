@@ -74,78 +74,6 @@ exports.sendConnectionRequest = async (req, res) => {
   }
 };
 
-// exports.acceptConnectionRequest = async (req, res) => {
-//   try {
-//     const { requestId } = req.params;
-//     const userId = req.user._id;
-//     console.log("this is the userId: ", userId);
-//     const connection = await Connection.findOne({ _id: requestId });
-//     if (!connection) {
-//       return res.status(404).json({
-//         message: "Connection not found!",
-//       });
-//     }
-
-//     if (connection.recipient.toString() !== userId.toString()) {
-//       return res.status(403).json({
-//         message: "You are not authorized to accept this connection request!",
-//       });
-//     }
-//     connection.status = "connected";
-//     await connection.save();
-
-//     //Notify the requester that the connection request has been accepted
-//     const requester = await User.findById(connection.requester);
-//     if (requester) {
-//       requester.notifications.push({
-//         message: `${req.user.firstName} ${req.user.lastName} has accepted your connection request!`,
-//         link: `/profile/${req.user._id}`,
-//       });
-//       await requester.save();
-//     } else {
-//       console.log("Requester not found for notification");
-//     }
-
-//     //Notify the recipient that the connection request has been accepted
-//   } catch (error) {
-//     // res.status(400).json({ error });
-//     res.status(400).json({ error });
-//   }
-// };
-
-// exports.acceptConnectionRequest = async (req, res) => {
-//   try {
-//     const { requestId } = req.params;
-//     const userId = req.userData.userId; // Assuming userId is set in the userData by your auth middleware
-
-//     console.log("this is the userId: ", userId);
-//     const connection = await Connection.findById(requestId);
-//     if (!connection) {
-//       return res.status(404).json({
-//         message: "Connection not found!",
-//       });
-//     }
-//     console.log("this is the connection: ", connection.recipient);
-//     //check if the logged-in user is the recipient of the connection request
-//     if (connection.recipient.toString() !== userId.toString()) {
-//       return res.status(403).json({
-//         message: "You are not authorized to accept this connection request!",
-//       });
-//     }
-
-//     //update the connection status to connected
-//     connection.status = "connected";
-//     await connection.save();
-//     res.status(200).json({
-//       message: "Connection accepted successfully!",
-//       connection,
-//     });
-//   } catch (error) {
-//     res
-//       .status(400)
-//       .json({ error, message: "Error in AcceptConnectionRequest" });
-//   }
-// };
 
 exports.acceptConnectionRequest = async (req, res) => {
   try {
@@ -295,31 +223,7 @@ exports.rejectConnectionRequest = async (req, res) => {
   }
 };
 
-// Get All pending connection requests
-// exports.getPendingConnectionRequests = async (req, res) => {
-//   try {
-//     const userId = req.userData.userId;
-//     console.log("this is the userId: ", userId);
-//     const pendingRequests = await Connection.find({
-//       recipient: userId, // is the id of the user who is logged in
-//       status: "pending",
-//     })
-//       .populate("requester", "firstName lastName email")
-//       .then((data) => {
-//         // console.log("this is the data: ", data);
-//       });
-//       console.log("this is the pendingRequests: ", pendingRequests);
-//     if (!pendingRequests) {
-//       return res.status(404).json({
-//         message: "No pending requests found!",
-//       });
-//     }
 
-//     res.status(200).json({ pendingRequests });
-//   } catch (error) {
-//     res.status(400).json({ error: error.toString() });
-//   }
-// };
 exports.getPendingConnectionRequests = async (req, res) => {
   try {
     const userId = req.userData.userId;

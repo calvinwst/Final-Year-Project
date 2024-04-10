@@ -154,38 +154,6 @@ exports.getExperience = async (req, res) => {
 
 // ADD experience to user profile
 exports.addExperience = async (req, res) => {
-  // TODO: Implement this function
-  // const { title, company, location, startDate, endDate, description } =
-  //   req.body;
-  // console.log(req.body);
-  // try {
-  //   const user = await User.findById(req.params.id);
-  //   if (!user) {
-  //     return res.status(404).json({ message: "User not found" });
-  //   }
-  //   const newExperience = {
-  //     title,
-  //     company,
-  //     location,
-  //     startDate,
-  //     endDate,
-  //     description,
-  //   };
-
-  //   if (user.experience.length > 0) {
-  //     user.experience.unshift(newExperience);
-  //   } else {
-  //     user.experience.push(newExperience);
-  //   }
-  //   await user.save();
-  //   res.json(user.experience);
-  //   // user.experience.unshift(newExperience);
-  //   // await user.save();
-  //   // res.json(user.experience);
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ error: "Internal Server Error" });
-  // }
 
   try {
     const experienceData = req.body;
@@ -316,40 +284,7 @@ exports.getEducation = async (req, res) => {
   }
 };
 
-// ADD education to user profile
-// exports.addEducation = async (req, res) => {
-//   // TODO: Implement this function
-//   const { medicalDegree, medicalSchool, residency, fellowship } = req.body;
-//   console.log(req.body);
-//   try {
-//     User.findById(req.params.id)
-//       .then((user) => {
-//         if (user) {
-//           const newEducation = {
-//             medicalDegree,
-//             medicalSchool,
-//             residency,
-//             fellowship,
-//           };
-//           if (user.medicalEducation.length > 0) {
-//             user.medicalEducation.unshift(newEducation);
-//           } else {
-//             user.medicalEducation.push(newEducation);
-//           }
-//           user.save().then((user) => res.json(user));
-//         } else {
-//           res.status(404).json({ message: "User not found" });
-//         }
-//       })
-//       .catch((error) => {
-//         console.error(error);
-//         res.status(500).json({ error: "Internal Server Error" });
-//       });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+
 exports.addEducation = async (req, res) => {
   try {
     const educationData = req.body;

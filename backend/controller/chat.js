@@ -123,48 +123,7 @@ exports.getChatByUserId = (req, res) => {
 };
 
 // Create chat
-// exports.createChat = (req, res) => {
-//   const { users, chatName } = req.body;
-//   // const image = req.files && req.files.image ? req.files.image[0].path : null;
-//   const image = req.files && req.files.image ? req.files.image[0].path : null;
 
-//   console.log("this is the image: ", image);
-//   console.log("this is the user: ", users);
-//   console.log("length of the user ", users.length);
-//   if (users.length > 2) {
-//     Chat.create({
-//       users: JSON.parse(users),
-//       chatName,
-//       isGroupChat: true,
-//       chatImgPath: image,
-//     })
-//       .then(() => {
-//         res.status(201).json({
-//           message: "Chat created successfully!",
-//         });
-//       })
-//       .catch((error) => {
-//         res.status(400).json({
-//           error: error.toString(),
-//         });
-//       });
-//   } else {
-//     Chat.create({
-//       users,
-//       chatName,
-//     })
-//       .then(() => {
-//         res.status(201).json({
-//           message: "Chat created successfully!",
-//         });
-//       })
-//       .catch((error) => {
-//         res.status(400).json({
-//           error: error.toString(),
-//         });
-//       });
-//   }
-// };
 
 exports.createChat = (req, res) => {
   const { users, chatName, groupAdmin } = req.body;
@@ -217,52 +176,7 @@ exports.createChat = (req, res) => {
     });
 };
 
-// Update chat by ID
-// exports.updateChat = (req, res) => {
-//   const { users, chatName } = req.body;
-//   const image = req.files && req.files.image ? req.files.image[0].path : null;
-
-//   if (users.length > 2) {
-//     Chat.updateOne(
-//       { _id: req.params.id },
-//       {
-//         users,
-//         chatName,
-//         isGroupChat: true,
-//         chatImgPath: image,
-//       }
-//     )
-//       .then(() => {
-//         res.status(200).json({
-//           message: "Chat updated successfully!",
-//         });
-//       })
-//       .catch((error) => {
-//         res.status(400).json({
-//           error: error.toString(),
-//         });
-//       });
-//   } else {
-//     Chat.updateOne(
-//       { _id: req.params.id },
-//       {
-//         users,
-//         chatName,
-
-//       }
-//     )
-//       .then(() => {
-//         res.status(200).json({
-//           message: "Chat updated successfully!",
-//         });
-//       })
-//       .catch((error) => {
-//         res.status(400).json({
-//           error: error.toString(),
-//         });
-//       });
-//   }
-// };
+//Update chat
 exports.updateChat = async (req, res) => {
   let { users, chatName } = req.body;
   const image = req.files && req.files.image ? req.files.image[0].path : null;

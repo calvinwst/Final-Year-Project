@@ -1,10 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-const bodyParser = require("body-parser");
-const session = require("express-session");
 const checkAuth = require("../backend/middleware/check-auth");
-const MongoDBStore = require("connect-mongodb-session")(session);
 const cors = require("cors");
 const mongoose = require("mongoose");
 const passport = require("passport");
