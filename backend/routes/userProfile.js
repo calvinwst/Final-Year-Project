@@ -90,6 +90,9 @@ router.get("/users/:id/notifications", userProfileController.getAllNotificationB
 //PATCH user notification by user profile ID
 router.patch("/users/:id/notifications/:notification_id/read", userProfileController.markAsRead);
 
+//NUMBER of unread notifications by user profile ID
+// router.get("/users/:id/notifications/unread", userProfileController.getUnreadNotification);
+
 //Get all User connections by user profile ID
 router.get("/users/:id/connections", userProfileController.getAllConnections);
 

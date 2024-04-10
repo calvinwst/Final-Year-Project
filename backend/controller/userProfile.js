@@ -565,6 +565,9 @@ exports.getAllConnections = async (req, res) => {
   }
 };
 
+// Get number of unread notifications by user profile ID
+
+
 // // ADD license to user profile
 // exports.addLicense = async (req, res) => {
 //   // TODO: Implement this function
