@@ -8,10 +8,6 @@ import {
   IconButton,
   Image,
   Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
   MenuList,
   Menu,
   MenuItem,
@@ -32,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiLike, BiChat, BiShare, BiSolidLike } from "react-icons/bi";
-import { AuthContext } from "../../context/authContext";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import axios from "axios";
 import CustomModal from "../../components/customModel";
@@ -40,6 +35,7 @@ import { Link } from "react-router-dom";
 import { RiEdit2Fill } from "react-icons/ri";
 import Select from "react-select";
 import { io, Socket } from "socket.io-client";
+import { AuthContext } from "../../context/authContext";
 
 import jwt_decode from "jwt-decode";
 
@@ -122,6 +118,7 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
       return `${diffDays} days ago`;
     }
   };
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (userId !== undefined) {
@@ -133,7 +130,11 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   }, [userId]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:4000");
+    const newSocket = io("http://localhost:4000", {
+      query: {
+        token,
+      },
+    });
     setSocket(newSocket);
 
     return () => {
@@ -534,7 +535,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                 <Button
                   colorScheme="blue"
                   onClick={() => {
-                    // console.log("this is the selected connections >>>", selectedConnections);
                     sharePost();
                     setIsShare(false);
                   }}

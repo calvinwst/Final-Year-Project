@@ -49,6 +49,7 @@ function App() {
   const [notification, setNotification] = useState<INotification[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -101,22 +102,9 @@ function App() {
     console.log("this is userId in storeUserId", userId);
   }, []);
 
-  const markNotificationAsRead = async (notificationId: string) => {
-    try {
-      await axios.patch(
-        `http://localhost:4000/users/${userId}/notifications/${notificationId}/read`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      setNotification(notification.filter((n) => n._id !== notificationId));
-      console.log("Notification marked as read");
-    } catch (err) {
-      console.error("Error marking notification as read", err);
-    }
+
+  const decreaseUnreadNotificationsCount = () => {
+    setUnreadNotificationsCount(prevCount => prevCount - 1);
   };
 
   return (
@@ -129,9 +117,8 @@ function App() {
         logout: logout,
         storeToken: storeToken,
         storeUserId: storeUserId,
-        notifications: notification,
-        setNotifications: setNotification,
-        markNotificationAsRead: markNotificationAsRead,
+        unreadNotifications: unreadNotificationsCount,
+        decreaseUnreadNotificationsCount,
       }}
     >
       <CustomNav />

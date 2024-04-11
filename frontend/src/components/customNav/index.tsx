@@ -22,6 +22,7 @@ import { AuthContext } from "../../context/authContext";
 import { IoPeopleOutline } from "react-icons/io5";
 import NotificationBubble from "./NotificationBubble";
 import axios from "axios";
+import { io, Socket } from "socket.io-client";
 
 interface Notification {
   message: string;
@@ -33,17 +34,40 @@ interface Notification {
 const CustomNav = () => {
   const isNotSmallerScreen = useBreakpointValue({ base: false, md: true });
   const [imageFilePath, setImageFilePath] = React.useState("");
-  // const [notification, setNotification] = useState([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [notification, setNotification] = useState<Notification[]>([]);
+  const [countNotification, setCountNotification] = useState(0);
   const auth = useContext(AuthContext);
+  const { token, unreadNotifications } = useContext(AuthContext);
   const userId = auth.userId;
 
-  console.log("auth is >", auth.isLogged);
+  console.log("this si the unreadNotifications", unreadNotifications);
 
   useEffect(() => {
     fetchUserDetail();
     fetchNotifications();
   }, [userId]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:4000", {
+      query: { token },
+    });
+    setSocket(newSocket);
+
+    newSocket.on("unread-notification-count", (count: number) => {
+      setCountNotification(count);
+    });
+
+    newSocket.on("notification-read", () => {
+      setCountNotification((count) => count - 1);
+    });
+
+    return () => {
+      newSocket.close();
+    };
+  }, [userId]);
+
+  console.log("this is countNotification", countNotification);
 
   const fetchUserDetail = async () => {
     try {
@@ -74,7 +98,7 @@ const CustomNav = () => {
     }
   };
 
-  const unreadNotifications = notification.filter((n) => !n.read);
+  // const unreadNotifications = notification.filter((n) => !n.read);
 
   const filePath = `http://localhost:4000/${imageFilePath}`;
 
@@ -108,7 +132,7 @@ const CustomNav = () => {
                 Research/Case Listing
               </Box>
               <Box as={RouterLink} to="/notification">
-                <NotificationBubble count={unreadNotifications.length} />
+                <NotificationBubble count={countNotification} />
               </Box>
               <Flex as={RouterLink} to="/network" alignItems="center">
                 <IoPeopleOutline />

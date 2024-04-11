@@ -13,18 +13,30 @@ import { MdEmail, MdCheckCircle } from "react-icons/md"; // Example icons
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { set } from "date-fns";
-
-
+import { Socket, io } from "socket.io-client";
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { userId } = useContext(AuthContext);
-  
+  const { userId, decreaseUnreadNotificationsCount, token } =
+    useContext(AuthContext);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    fetchNotifications();
+    if (userId) {
+      fetchNotifications();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:4000", {
+      query: { token },
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, [userId]);
 
   const fetchNotifications = async () => {
@@ -55,6 +67,7 @@ const Notification = () => {
         }
       );
       setNotifications(notifications.filter((n) => n._id !== notificationId));
+      socket?.emit("notification-read", { notificationId });
       console.log("Notification marked as read");
     } catch (err) {
       console.error("Error marking notification as read", err);
@@ -104,7 +117,6 @@ const Notification = () => {
                     ml="auto"
                     onClick={() => {
                       handleMarkAsRead(notification._id);
-
                     }}
                   >
                     Mark as Read

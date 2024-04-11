@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
 import {
   Heading,
   Avatar,
@@ -21,18 +20,20 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { io, Socket } from "socket.io-client";
+import { AuthContext } from "../../context/authContext";
 
 const MessageDetails = () => {
   const { researchId } = useParams<{ researchId: string }>();
   const [message, setMessage] = useState("");
-  const { userId } = useContext(AuthContext);
+  const { userId, token } = useContext(AuthContext);
   const [socket, setSocket] = useState<Socket | null>(null);
   const toast = useToast();
   const navigate = useNavigate();
-  console.log("this is researchId >>>", researchId);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:4000");
+    const newSocket = io("http://localhost:4000", {
+      query: { token },
+    });
     setSocket(newSocket);
 
     return () => {

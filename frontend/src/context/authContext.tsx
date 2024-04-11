@@ -19,6 +19,8 @@ interface IAuthData {
   notifications?: INotification[];
   setNotifications?: React.Dispatch<React.SetStateAction<INotification[]>>;
   markNotificationAsRead?: (notificationId: string) => void;
+  unreadNotifications?: any;
+  decreaseUnreadNotificationsCount: () => void;
   // user: any; // Replace any with your User type
 }
 
@@ -34,5 +36,6 @@ export const AuthContext = createContext<IAuthData>({
   notifications: [],
   setNotifications: () => {}, // This will be overridden by the actual setState function
   markNotificationAsRead: () => {}, // We'll implement this function in the provider
+  decreaseUnreadNotificationsCount: () => {},
   // user: null, // Replace null with your initial user data
 });

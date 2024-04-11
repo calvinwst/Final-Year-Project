@@ -270,6 +270,16 @@ const NetworkDetails = () => {
                   <Text color="gray.500">{networkData.profile.location}</Text>
                 </VStack>
               </HStack>
+              {connectionStatus !== "connected" &&
+                connectionStatus !== "accept" &&
+                connectionStatus !== "request" && (
+                  <Button
+                    colorScheme="blue"
+                    onClick={() => handleConnect(networkData._id)}
+                  >
+                    Connect
+                  </Button>
+                )}
               {/* Conditional rendering for buttons, each button can be styled individually */}
               {connectionStatus === "connected" && (
                 <Button

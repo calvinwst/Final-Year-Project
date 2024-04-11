@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import {
@@ -34,9 +34,9 @@ import axios from "axios";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { CustomModal } from "../../components/customModel";
 import Message, { User, Messages } from "../Message";
-import { AuthContext } from "../../context/authContext";
 import { io, Socket } from "socket.io-client";
 import Select from "react-select";
+import { AuthContext } from "../../context/authContext";
 
 interface ChatProps {
   messages: Messages[];
@@ -48,7 +48,7 @@ interface ChatProps {
 }
 
 interface Connections {
-  _id:string;
+  _id: string;
   username: string;
 }
 
@@ -72,10 +72,14 @@ const Chat = () => {
     isGroupChat: false,
     image: "",
   });
-  const [users, setUsers] = useState<any[]>([]);
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:4000");
+    const newSocket = io("http://localhost:4000", {
+      query: {
+        token,
+      },
+    });
     setSocket(newSocket);
 
     newSocket.on("newMessage", (message) => {
@@ -110,23 +114,23 @@ const Chat = () => {
     }
   };
 
-
   //fecth user profile connection
-   const fetchUserProfileConnection = async () => {
-    try{
-      const response = await axios.get(`http://localhost:4000/users/${userId}/connections`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+  const fetchUserProfileConnection = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/users/${userId}/connections`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log("this is the response:: ", response.data);
       setConnections(response.data);
-
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   };
-
 
   const option = connections.map((user) => ({
     value: user._id,
@@ -170,6 +174,7 @@ const Chat = () => {
   const handleCreateChat = async () => {
     try {
       const formData = setUpFormData();
+      console.log("this is the formData:: ", formData);
       const response = await axios.post(
         "http://localhost:4000/chat",
         formData,
@@ -255,7 +260,6 @@ const Chat = () => {
     }
   };
 
-
   return (
     <>
       <Box bg={bg} minH="100vh" py="12" px={{ base: "4", lg: "8" }} mt={16}>
@@ -306,7 +310,7 @@ const Chat = () => {
               spacing={3}
               w="full"
               overflowY="auto"
-            scrollBehavior={"smooth"}
+              scrollBehavior={"smooth"}
               overflowX="hidden"
               h={{ base: "calc(100vh - 200px)", md: "full" }}
             >
