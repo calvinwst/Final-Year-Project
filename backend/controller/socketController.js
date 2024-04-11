@@ -1,6 +1,7 @@
 const Message = require("../model/message");
 const Chat = require("../model/chat");
 const User = require("../model/user");
+const jwt = require("jsonwebtoken");
 
 const socketController = (io) => {
   async function createNotification(senderId, receiverId, message) {
@@ -25,7 +26,47 @@ const socketController = (io) => {
     }
   }
 
+  async function emitUnreadNotificationCount(userID) {
+    try {
+      const user = await User.findById(userID);
+      if (!user) {
+        console.log("User not found!");
+        return;
+      }
+      const unreadNotifications = user.notifications.filter(
+        (notification) => !notification.read
+      ).length;
+      console.log("Unread notifications: ", unreadNotifications);
+      io.to(`userRoom-${userID}`).emit(
+        "unread-notification-count",
+        unreadNotifications
+      );
+    } catch (error) {
+      console.log(
+        "this is the error in unreadnotification:  ",
+        error.toString()
+      );
+    }
+  }
+
   io.on("connection", (socket) => {
+    //authentication user
+    const token = socket.handshake.query.token;
+    console.log("this is the token: ", token);
+    //verify token
+    try {
+      const decodedToken = jwt.verify(token, "secretion");
+      socket.userId = decodedToken.userId;
+      socket.join(`userRoom-${socket.userId}`); // Join user-specific room
+      console.log(`User ${socket.userId} authenticated and joined their room`);
+      if (socket.userId) {
+        emitUnreadNotificationCount(socket.userId);
+      }
+      // emitUnreadNotificationCount(socket.userId, io);
+    } catch (error) {
+      console.log("this is the error in the connection: ", error.toString());
+    }
+
     socket.on("sendMessage", async (data) => {
       // Handle sendMessage event
       try {
@@ -46,11 +87,7 @@ const socketController = (io) => {
 
         const receiverId = chat.users.filter((id) => id != senderId)[0];
         //notification
-        await Promise.all(
-          receiverId.map((receiverId) =>
-            createNotification(senderId, receiverId, content)
-          )
-        );
+        await createNotification(senderId, receiverId, content);
 
         await chat.save();
         io.emit("newMessage", message); // Emit the message to all connected clients
@@ -114,6 +151,7 @@ const socketController = (io) => {
         let chat = await Chat.findOne({
           isGroupChat: false,
           users: { $all: [senderId, receiverId] },
+          groupAdmin: senderId,
         });
 
         if (!chat) {
@@ -138,6 +176,37 @@ const socketController = (io) => {
         io.emit("newMessage", message); // Emit the message to all connected clients
       } catch (error) {
         console.log("this is the error: ", error.toString());
+      }
+    });
+
+    //Listen for the 'notification-read' event
+    socket.on("notification-read", async ({ notificationId }) => {
+      try {
+        const user = await User.findOne({
+          "notifications._id": notificationId,
+        });
+        if (!user) {
+          console.log("User not found notification-read!");
+          return;
+        }
+
+        //Mark the notification as read
+        const notification = user.notifications.id(notificationId);
+        notification.read = true;
+        await user.save();
+
+        const unreadNotifications = user.notifications.filter(
+          (notification) => !notification.read
+        ).length;
+        io.to(`userRoom-${socket.userId}`).emit(
+          "unread-notification-count",
+          unreadNotifications
+        );
+      } catch (error) {
+        console.log(
+          "this is the error in notification-read: ",
+          error.toString()
+        );
       }
     });
 

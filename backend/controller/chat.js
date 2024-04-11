@@ -95,13 +95,6 @@ exports.getChatByUserId = (req, res) => {
           "username profile.firstName profile.lastName profile.profileImgPath",
       },
     })
-    // .populate({
-    //   path: "messages",
-    //   populate: {
-    //     path: "chat",
-    //     select: "chatName",
-    //   },
-    // })
 
     .then((chat) => {
       if (!chat) {
@@ -122,58 +115,48 @@ exports.getChatByUserId = (req, res) => {
     });
 };
 
-// Create chat
-
-
-exports.createChat = (req, res) => {
+//Create chat
+exports.createChat = async (req, res) => {
   const { users, chatName, groupAdmin } = req.body;
-  const image = req.files && req.files.image ? req.files.image[0].path : null;
+  const image = req.files?.image ? req.files.image[0].path : null;
+  console.log("ths user: ", users);
+  // Parse USERS
+  const parsedUsers = typeof users === "string" ? JSON.parse(users) : users;
+  console.log("Parsed users: ", parsedUsers);
 
-  //parse USERS
-  const parsedUsers = JSON.parse(users);
-
-  //check if a chat with the sme users already exists
-  Chat.findOne({ users: { $all: parsedUsers } })
-    .then((existingChat) => {
-      if (existingChat) {
-        return res.status(200).json({
-          message: "Chat already exists!",
-          chat: existingChat,
-        });
-      } else {
-        // If no chat with the same users exists, create a new chat
-        const chatData =
-          users.length > 2
-            ? {
-                users: parsedUsers,
-                chatName,
-                isGroupChat: true,
-                chatImgPath: image,
-                groupAdmin,
-              }
-            : {
-                users: parsedUsers,
-                chatName,
-              };
-        Chat.create(chatData)
-          .then((chat) => {
-            res.status(201).json({
-              message: "Chat created successfully!",
-              chat: chat,
-            });
-          })
-          .catch((error) => {
-            res.status(400).json({
-              error: error.toString(),
-            });
-          });
-      }
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error.toString(),
-      });
+  try {
+    // Check if a chat with the same users already exists
+    const existingChat = await Chat.findOne({
+      users: { $all: parsedUsers, $size: parsedUsers.length },
     });
+
+    if (existingChat) {
+      console.log("Chat already exists!");
+      return res.status(200).json({
+        message: "Chat already exists!",
+        chat: existingChat,
+      });
+    }
+
+    // If no chat with the same users exists, create a new chat
+    const chatData = {
+      users: parsedUsers,
+      chatName,
+      groupAdmin: parsedUsers.length > 2 ? groupAdmin : parsedUsers[0],
+      ...(parsedUsers.length > 2 && { isGroupChat: true, chatImgPath: image }),
+    };
+
+    const chat = await Chat.create(chatData);
+
+    res.status(201).json({
+      message: "Chat created successfully!",
+      chat,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.toString(),
+    });
+  }
 };
 
 //Update chat
@@ -196,7 +179,6 @@ exports.updateChat = async (req, res) => {
   let updateData = {
     chatName,
   };
-
 
   if (image) {
     updateData.chatImgPath = image;
