@@ -54,6 +54,8 @@ const UserFeed = () => {
     fetchUserCommunity();
   }, [userId]);
 
+  console.log("this is the community >>> ", community);
+
   const fetchUserFeed = async () => {
     try {
       axios
@@ -201,6 +203,12 @@ const UserFeed = () => {
                 _id: "",
               };
             });
+            // setUserFeedContent({
+            //   content: "",
+            //   user: "",
+            //   image: "",
+            //   _id: "",
+            // });
             setSelectedImage("");
             fetchUserFeed();
             toast({
@@ -460,12 +468,6 @@ const UserFeed = () => {
                     editPost={userFeed.isEdited ? userFeed.isEdited : false}
                     updateComments={updateComments}
                     deleteComment={deletedComment}
-                    verified={
-                      userFeed.user && userFeed.user.emailVerification
-                        ? userFeed.user.emailVerification.verified
-                        : false
-                    }
-                    userID={userFeed.user ? userFeed.user._id : ""}
                     type="user"
                   />
                 ))}

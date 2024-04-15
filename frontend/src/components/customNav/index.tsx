@@ -38,10 +38,9 @@ const CustomNav = () => {
   const [notification, setNotification] = useState<Notification[]>([]);
   const [countNotification, setCountNotification] = useState(0);
   const auth = useContext(AuthContext);
-  const { token, unreadNotifications, userId } = useContext(AuthContext);
-  // const userId = auth.userId;
+  const { token, unreadNotifications } = useContext(AuthContext);
+  const userId = auth.userId;
 
-  console.log("this is userId", userId);
   console.log("this si the unreadNotifications", unreadNotifications);
 
   useEffect(() => {

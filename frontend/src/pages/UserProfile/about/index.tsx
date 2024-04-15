@@ -189,9 +189,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
             <FormControl id="location" mb={4}>
               <FormLabel>Location</FormLabel>
               <Input
-                placeholder={
-                  profileData.location ? profileData.location : "Dublin, IRE"
-                }
+                placeholder="New York, NY"
+                value={profileData.location}
                 onChange={(e) => {
                   profileData.location = e.target.value;
                 }}
@@ -200,9 +199,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
             <FormControl id="specialty" mb={4}>
               <FormLabel>Specialty</FormLabel>
               <Input
-                placeholder={
-                  profileData.specialty ? profileData.specialty : "Cardiology"
-                }
+                placeholder="Cardiology"
+                value={profileData.specialty}
                 onChange={(e) => {
                   profileData.specialty = e.target.value;
                 }}
