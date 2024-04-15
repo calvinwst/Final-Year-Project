@@ -9,7 +9,6 @@ Welcome to MedConnect, a platform that enhances connectivity among medical profe
 - Discussion forums for clinical cases and medical topics
 - Research paper repository for sharing and accessing latest findings
 - Professional networking to connect with peers and experts in the medical field
-- Events and conferences listing for staying updated with industry happenings
 - Community features like groups, following users, and notification
 
 ## Getting Started
