@@ -131,6 +131,11 @@ const UserFeedDetails = () => {
                 }
                 updateComments={updateComments}
                 deleteComment={deletedComment}
+                verified={
+                  userFeed.user
+                    ? userFeed.user.emailVerification.verified
+                    : false
+                }
                 type="user"
               />
             ))}

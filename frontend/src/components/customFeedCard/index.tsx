@@ -38,6 +38,7 @@ import { io, Socket } from "socket.io-client";
 import { AuthContext } from "../../context/authContext";
 
 import jwt_decode from "jwt-decode";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 interface UserProfile {
   profileImgPath: string;
@@ -71,6 +72,7 @@ interface CustomFeedCardProps {
   deleteComment?: (postId: string, commentId: string) => void;
   editPost?: boolean;
   moderator?: string;
+  verified?: boolean;
   type: "user" | "community";
 }
 
@@ -91,9 +93,8 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   editPost,
   moderator,
   type,
+  verified,
 }) => {
-  console.log("the comment in userFeed >>", comments);
-  console.log("the like in userFeed >>", editPost);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comment, setComment] = useState("");
@@ -328,9 +329,7 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
 
-  // console.log("this is the like >>>", like);
-  console.log("This is the isLike >>>", isLike);
-
+  console.log("thsi si the comment :: ", comments);
   return (
     <>
       <Box borderWidth="1px" borderRadius="lg" bg="white" shadow="sm" p={3}>
@@ -346,6 +345,20 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
               <Flex alignItems="center">
                 <Heading as="h3" size="md">
                   {name}
+                  {
+                    //Verified badge
+                    verified && (
+                      <Tooltip label="This user is verified" fontSize="md">
+                        <span>
+                          <CheckCircleIcon
+                            color="green.500"
+                            ml={1}
+                            boxSize={3}
+                          />
+                        </span>
+                      </Tooltip>
+                    )
+                  }
                 </Heading>
                 {editPost && (
                   <Tooltip label="This post has been edited" fontSize="md">
@@ -449,6 +462,24 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                       <Link to={`/network/${comment.user._id}`}>
                         <Heading as="h3" size="sm">
                           {comment.user.username}
+                          {
+                            //Verified badge
+                            comment.user.emailVerification &&
+                              comment.user.emailVerification.verified && (
+                                <Tooltip
+                                  label="This user is verified"
+                                  fontSize="md"
+                                >
+                                  <span>
+                                    <CheckCircleIcon
+                                      color="green.500"
+                                      ml={1}
+                                      boxSize={3}
+                                    />
+                                  </span>
+                                </Tooltip>
+                              )
+                          }
                         </Heading>
                       </Link>
                       <Text fontSize="sm" color="gray.600">

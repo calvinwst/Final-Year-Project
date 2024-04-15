@@ -468,6 +468,11 @@ const UserFeed = () => {
                     editPost={userFeed.isEdited ? userFeed.isEdited : false}
                     updateComments={updateComments}
                     deleteComment={deletedComment}
+                    verified={
+                      userFeed.user && userFeed.user.emailVerification
+                        ? userFeed.user.emailVerification.verified
+                        : false
+                    }
                     type="user"
                   />
                 ))}
