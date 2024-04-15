@@ -492,6 +492,7 @@ const CommunityDetails = () => {
               updateComments={updateComments}
               deleteComment={deleteComment}
               moderator={moderator}
+              verified={post.user ? post.user.emailVerification.verified : false}
               type="community"
             />
           ))}

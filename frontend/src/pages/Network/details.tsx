@@ -16,10 +16,12 @@ import {
   Heading,
   Tag,
   useToast,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { request } from "http";
 import { useNavigate } from "react-router-dom";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 const NetworkDetails = () => {
   const auth = useContext(AuthContext);
@@ -42,6 +44,9 @@ const NetworkDetails = () => {
     medicalEducation: [],
     experience: [],
     skills: [],
+    emailVerification: {
+      isVerified: Boolean,
+    },
   });
   const bg = useColorModeValue("white", "gray.700");
   const navigate = useNavigate();
@@ -237,9 +242,12 @@ const NetworkDetails = () => {
 
   const profileImgPath = `http://localhost:4000/${networkData.profile.profileImgPath}`;
 
+  console.log(
+    "this is emailVerification >>>",
+    networkData.emailVerification.verified
+  );
   return (
     <>
-      {/* <Text>Network Details</Text> */}
       <Flex justifyContent="center" alignItems="center" height="100vh">
         <Box
           p={5}
@@ -266,21 +274,32 @@ const NetworkDetails = () => {
                   <Heading as="h2" size="lg">
                     {networkData.profile.firstName}{" "}
                     {networkData.profile.lastName}
+                    {networkData.emailVerification.verified && (
+                      <Tooltip label="Verified" placement="top" hasArrow>
+                        <span>
+                          <CheckCircleIcon
+                            color="green.500"
+                            ml={1}
+                            boxSize={3}
+                          />
+                        </span>
+                      </Tooltip>
+                    )}
                   </Heading>
                   <Text color="gray.500">{networkData.profile.location}</Text>
                 </VStack>
               </HStack>
-              {connectionStatus !== "connected" &&
-                connectionStatus !== "accept" &&
-                connectionStatus !== "request" && (
-                  <Button
-                    colorScheme="blue"
-                    onClick={() => handleConnect(networkData._id)}
-                  >
-                    Connect
-                  </Button>
-                )}
-              {/* Conditional rendering for buttons, each button can be styled individually */}
+              {["connected", "accept", "request"].indexOf(connectionStatus) ===
+                -1 && (
+                <Button
+                  colorScheme="blue"
+                  onClick={() => handleConnect(networkData._id)}
+                  _hover={{ bg: "blue.500", color: "white" }}
+                  _focus={{ boxShadow: "outline" }}
+                >
+                  Connect
+                </Button>
+              )}
               {connectionStatus === "connected" && (
                 <Button
                   colorScheme="blue"
@@ -288,6 +307,8 @@ const NetworkDetails = () => {
                   onClick={() => {
                     /* click handler code */
                   }}
+                  _hover={{ bg: "blue.50" }}
+                  _focus={{ boxShadow: "outline" }}
                 >
                   Connected
                 </Button>
@@ -300,7 +321,9 @@ const NetworkDetails = () => {
                   <Button
                     colorScheme="red"
                     onClick={handleReject}
-                    ml={2} // Add margin left to separate buttons
+                    ml={2}
+                    _hover={{ bg: "red.500", color: "white" }}
+                    _focus={{ boxShadow: "outline" }}
                   >
                     Reject
                   </Button>
@@ -310,6 +333,8 @@ const NetworkDetails = () => {
                 <Button
                   colorScheme="blue"
                   onClick={() => handleConnect(networkData._id)}
+                  _hover={{ bg: "blue.500", color: "white" }}
+                  _focus={{ boxShadow: "outline" }}
                 >
                   Connect
                 </Button>
@@ -333,7 +358,7 @@ const NetworkDetails = () => {
                 ))}
               </HStack>
             </Box>
-            <Box p={4} bg={bg} borderRadius="md">
+            <Box p={4} borderRadius="md">
               <Text fontSize="lg" mb={2}>
                 Skills:
               </Text>

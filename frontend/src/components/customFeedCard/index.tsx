@@ -38,6 +38,7 @@ import { io, Socket } from "socket.io-client";
 import { AuthContext } from "../../context/authContext";
 
 import jwt_decode from "jwt-decode";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 interface UserProfile {
   profileImgPath: string;
@@ -70,7 +71,9 @@ interface CustomFeedCardProps {
   updateComments?: (postId: string, comment: Comment) => void;
   deleteComment?: (postId: string, commentId: string) => void;
   editPost?: boolean;
+  verified?: boolean;
   moderator?: string;
+  userID?: string;
   type: "user" | "community";
 }
 
@@ -91,9 +94,11 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
   editPost,
   moderator,
   type,
+  verified,
+  userID,
 }) => {
-  console.log("the comment in userFeed >>", comments);
-  console.log("the like in userFeed >>", editPost);
+  console.log("this si the verified in customFeed >>>", verified);
+  console.log("this is the comments >> ", comments);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comment, setComment] = useState("");
@@ -328,9 +333,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
 
-  // console.log("this is the like >>>", like);
-  console.log("This is the isLike >>>", isLike);
-
   return (
     <>
       <Box borderWidth="1px" borderRadius="lg" bg="white" shadow="sm" p={3}>
@@ -347,6 +349,21 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                 <Heading as="h3" size="md">
                   {name}
                 </Heading>
+                {
+                  //Verified Icon
+                  verified && (
+                    <Tooltip label="Verified" placement="top" hasArrow>
+                      <span>
+                        <CheckCircleIcon
+                          color="green.500"
+                          ml={1}
+                          boxSize={3}
+                          name="check-circle"
+                        />
+                      </span>
+                    </Tooltip>
+                  )
+                }
                 {editPost && (
                   <Tooltip label="This post has been edited" fontSize="md">
                     <Box ml="2" display="flex" alignItems="center">
@@ -376,9 +393,18 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                   Delete
                 </MenuItem>
               )}
-              {type === "user" && (
+              {(type === "community" || type === "user") && (
                 <MenuItem icon={<AiFillEdit />} onClick={onEdit}>
                   Edit
+                </MenuItem>
+              )}
+              {type === "user" && (
+                <MenuItem
+                  icon={<AiFillDelete />}
+                  onClick={onDelete}
+                  disabled={auth.userId === userID}
+                >
+                  Delete
                 </MenuItem>
               )}
             </MenuList>
@@ -449,6 +475,22 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
                       <Link to={`/network/${comment.user._id}`}>
                         <Heading as="h3" size="sm">
                           {comment.user.username}
+                          {comment.user.emailVerification &&
+                            comment.user.emailVerification.verified && (
+                              <Tooltip
+                                label="Verified"
+                                placement="top"
+                                hasArrow
+                              >
+                                <span>
+                                  <CheckCircleIcon
+                                    color="green.500"
+                                    ml={1}
+                                    boxSize={3}
+                                  />
+                                </span>
+                              </Tooltip>
+                            )}
                         </Heading>
                       </Link>
                       <Text fontSize="sm" color="gray.600">
