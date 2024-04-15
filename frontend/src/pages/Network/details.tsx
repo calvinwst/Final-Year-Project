@@ -16,10 +16,12 @@ import {
   Heading,
   Tag,
   useToast,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { request } from "http";
 import { useNavigate } from "react-router-dom";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 const NetworkDetails = () => {
   const auth = useContext(AuthContext);
@@ -42,6 +44,9 @@ const NetworkDetails = () => {
     medicalEducation: [],
     experience: [],
     skills: [],
+    emailVerification: {
+      verified: false, // set isVerified to false by default
+    },
   });
   const bg = useColorModeValue("white", "gray.700");
   const navigate = useNavigate();
@@ -73,10 +78,6 @@ const NetworkDetails = () => {
     fetchUserDetail();
     fetchAndCheckPendingRequests();
   }, [networkId, userId]);
-
-  console.log("this is userId >>>", userId);
-  console.log("this is networkId >>>", networkId);
-  console.log("this is the connectionRequestId >>>", connectionRequestId);
 
   const fetchUserDetail = async () => {
     try {
@@ -237,6 +238,11 @@ const NetworkDetails = () => {
 
   const profileImgPath = `http://localhost:4000/${networkData.profile.profileImgPath}`;
 
+  console.log("this is networkData >>>", networkData);
+  console.log(
+    "this is networkData verified >>>",
+    networkData.emailVerification.verified
+  );
   return (
     <>
       {/* <Text>Network Details</Text> */}
@@ -266,6 +272,14 @@ const NetworkDetails = () => {
                   <Heading as="h2" size="lg">
                     {networkData.profile.firstName}{" "}
                     {networkData.profile.lastName}
+                    {networkData.emailVerification.verified && (
+                      <Tooltip
+                        label="Email Verified"
+                        aria-label="Email Verified"
+                      >
+                        <CheckCircleIcon color="green.500" ml={1} boxSize={4} />
+                      </Tooltip>
+                    )}
                   </Heading>
                   <Text color="gray.500">{networkData.profile.location}</Text>
                 </VStack>
