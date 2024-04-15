@@ -18,34 +18,6 @@ exports.getAllCommunity = (req, res) => {
     });
 };
 
-// Get community by ID
-// exports.getCommunityById = (req, res) => {
-//   Community.findById(req.params.id)
-//     .populate({
-//       path: "communityFeed",
-//       model: "userFeed", // use the same case as in your model definition
-//       populate: {
-//         path: "user",
-//         model: "User",
-//         select:
-//           "username profile.firstName profile.lastName profile.profileImgPath",
-//       },
-
-//     })
-//     .populate(
-//       "member",
-//       "username profile.firstName profile.lastName profile.profileImgPath"
-//     )
-
-//     .then((community) => {
-//       res.status(200).json(community);
-//     })
-//     .catch((error) => {
-//       res.status(400).json({
-//         error: error.toString(),
-//       });
-//     });
-// };
 exports.getCommunityById = (req, res) => {
   Community.findById(req.params.id)
     .populate({
@@ -56,19 +28,19 @@ exports.getCommunityById = (req, res) => {
           path: "user",
           model: "User",
           select:
-            "username profile.firstName profile.lastName profile.profileImgPath",
+            "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified",
         },
         {
           path: "comment.user",
           model: "User",
           select:
-            "username profile.firstName profile.lastName profile.profileImgPath",
+            "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified",
         },
       ],
     })
     .populate(
       "member",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .then((community) => {
       res.status(200).json(community);
@@ -92,7 +64,7 @@ exports.getUserCommunities = (req, res) => {
         path: "user",
         model: "User",
         select:
-          "username profile.firstName profile.lastName profile.profileImgPath",
+          "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified",
         // select:
         //   "username profile.firstName profile.lastName profile.profileImgPath",
       },
@@ -322,7 +294,6 @@ exports.addPost = (req, res) => {
         error: error,
       });
     });
-
 };
 
 //Update post to community specific community id

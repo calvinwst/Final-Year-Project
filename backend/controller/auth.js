@@ -133,6 +133,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
+    //hash password before saving in database using bcrypt
     let hashedPassword = await bcrypt.hash(password, 10);
 
     let emailVerificationToken = jwt.sign(
@@ -162,6 +163,7 @@ exports.register = async (req, res) => {
       },
     });
 
+    // generate token for user login
     let token = jwt.sign(
       { userId: newUser.id, email: newUser.email },
       "secretion",

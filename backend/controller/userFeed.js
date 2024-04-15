@@ -5,11 +5,11 @@ exports.getAllUserFeed = (req, res) => {
   UserFeed.find()
     .populate(
       "user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .populate(
       "comment.user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .then((userFeed) => {
       res.status(200).json(userFeed);
@@ -24,11 +24,11 @@ exports.getUserFeedById = (req, res) => {
   UserFeed.findById(req.params.id)
     .populate(
       "user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .populate(
       "comment.user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .then((userFeed) => {
       res.status(200).json(userFeed);
@@ -104,7 +104,6 @@ exports.deleteUserFeed = (req, res) => {
     });
 };
 
-
 exports.addLike = (req, res) => {
   const userId = req.body.userId;
 
@@ -117,7 +116,7 @@ exports.addLike = (req, res) => {
       })
         .populate(
           "user",
-          "username profile.firstName profile.lastName profile.profileImgPath"
+          "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
         )
         .then((updateUserFeed) => {
           console.log("this is the updated userFeed: ", updateUserFeed);
@@ -192,13 +191,12 @@ exports.addComment = (req, res) => {
   )
     .populate(
       "user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .populate(
       "comment.user",
-      "username profile.lastName profile.profileImgPath"
+      "username profile.lastName profile.profileImgPath emailVerification.verified"
     )
-
 
     .then((updatedUserFeed) => {
       const lastComment =
@@ -224,8 +222,6 @@ exports.addComment = (req, res) => {
         message: "Comment added successfully!",
         comment: updatedUserFeed.comment[updatedUserFeed.comment.length - 1], // Return the last comment from the updated document
       });
-
-    
     })
     .catch((error) => {
       res.status(400).json({
@@ -233,8 +229,6 @@ exports.addComment = (req, res) => {
       });
     });
 };
-
-
 
 //Delete commnet from userFeed
 exports.deleteComment = (req, res) => {
@@ -249,7 +243,7 @@ exports.deleteComment = (req, res) => {
   )
     .populate(
       "comment.user",
-      "username profile.firstName profile.lastName profile.profileImgPath"
+      "username profile.firstName profile.lastName profile.profileImgPath emailVerification.verified"
     )
     .then((updatedUserFeed) => {
       res.status(200).json({
