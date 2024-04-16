@@ -48,6 +48,7 @@ exports.getChatById = (req, res) => {
   }
 
   Chat.findById(req.params.id)
+    .sort({ createdAt: -1 })
     .populate(
       "users",
       "username profile.firstName profile.lastName profile.profileImgPath"
@@ -74,6 +75,7 @@ exports.getChatById = (req, res) => {
 //Get chat by user ID
 exports.getChatByUserId = (req, res) => {
   Chat.find({ users: req.params.id })
+    .sort({ createdAt: -1 })
     .populate(
       "users",
       "username profile.firstName profile.lastName profile.profileImgPath"
