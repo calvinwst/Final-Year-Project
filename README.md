@@ -79,8 +79,7 @@ MedConnect is built using the following technologies:
 - Database: MongoDB NoSQL
 - Authentication: JWT
 - Real-time Communication: Socket.io
-- Package Manager: npm or yarn
-
+- Package Manager: npm
 ## Contributing
 
 We welcome contributions from the medical community to enhance MedConnect. If you have any suggestions, bug reports, or feature requests, please submit them through our GitHub repository.
