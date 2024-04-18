@@ -28,13 +28,7 @@ router.put("/chat/:id", upload.fields(uploadField), chatController.updateChat);
 // DELETE chat by ID
 router.delete("/chat/:id", chatController.deleteChat);
 
-// SEND message to chat
-//router.post("/chat/:id/message", chatController.sendMessage);
-
-// GET MESSAGE IN CHAT
-//router.get("/chat/:id/message", chatController.getMessage);
-
-// DELETE message from chat
-//router.delete("/chat/:id/message/:message_id", chatController.deleteMessage);
+//Leave chat
+router.put("/chat/:id/leave/:userId", chatController.leaveChat);
 
 module.exports = router;

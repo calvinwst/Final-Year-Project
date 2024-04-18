@@ -124,8 +124,6 @@ exports.createChat = async (req, res) => {
   console.log("ths user: ", users);
   // Parse USERS
   const parsedUsers = typeof users === "string" ? JSON.parse(users) : users;
-  console.log("Parsed users: ", parsedUsers);
-
   try {
     // Check if a chat with the same users already exists
     const existingChat = await Chat.findOne({
@@ -134,9 +132,8 @@ exports.createChat = async (req, res) => {
 
     if (existingChat) {
       console.log("Chat already exists!");
-      return res.status(200).json({
-        message: "Chat already exists!",
-        chat: existingChat,
+      return res.status(400).json({
+        error: "Chat already exists!",
       });
     }
 
@@ -231,4 +228,36 @@ exports.deleteChat = (req, res) => {
         error: error.toString(),
       });
     });
+};
+
+// leave chat chat/:id/leave/:userId
+exports.leaveChat = async (req, res) => {
+  const { id, userId } = req.params;
+  try {
+    const chat = await Chat.findById(id);
+    if (!chat) {
+      return res.status(404).json({
+        error: "Chat not found!",
+      });
+    }
+
+    const userIndex = chat.users.indexOf(userId);
+    if (userIndex === -1) {
+      return res.status(400).json({
+        error: "User not found in chat!",
+      });
+    }
+
+    // Remove user from chat
+    chat.users.splice(userIndex, 1);
+    await chat.save().then(() => {
+      res.status(200).json({
+        message: "User left chat successfully!",
+      });
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.toString(),
+    });
+  }
 };
