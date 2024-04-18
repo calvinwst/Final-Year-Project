@@ -184,12 +184,16 @@ const Chat = () => {
           },
         }
       );
-      console.log("this is the response:: ", response.data);
+      console.log("this is the  in psot caht:: ", response.data);
       showToast("Chat created successfully", "success");
       setIsOpened(false);
       fetchMessageDetails();
     } catch (err) {
-      showToast("Error creating chat", "error");
+      if (axios.isAxiosError(err)) {
+        showToast(err.response?.data.message || "An error occurred", "error");
+      } else {
+        showToast("An error occurred", "error");
+      }
       console.log(err);
     }
   };
@@ -260,6 +264,7 @@ const Chat = () => {
     }
   };
 
+  console.log("selected chat:: ", selectedChat);
   return (
     <>
       <Box bg={bg} minH="100vh" py="12" px={{ base: "4", lg: "8" }} mt={16}>
@@ -381,7 +386,6 @@ const Chat = () => {
                       </Tooltip>
                     </VStack>
                     <Spacer />
-
                     <Menu>
                       <MenuButton
                         as={IconButton}
@@ -447,6 +451,8 @@ const Chat = () => {
               _id={selectedChat?._id || ""}
               socket={socket}
               chatImgPath={selectedChat?.chatImgPath || ""}
+              isGroupChat={selectedChat?.isGroupChat || false}
+              fetchMessageDetails={fetchMessageDetails}
             />
           </VStack>
         </Flex>

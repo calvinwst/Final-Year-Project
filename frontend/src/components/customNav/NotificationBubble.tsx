@@ -21,7 +21,7 @@ const NotificationBubble: React.FC<NotificationBubbleProps> = ({ count }) => {
           style={{
             position: "absolute",
             top: "-2px",
-            right: "-23px",
+            right: "-29px",
             padding: "2px 5px",
             borderRadius: "50%",
             backgroundColor: "red",

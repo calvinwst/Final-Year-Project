@@ -172,7 +172,7 @@ const CommunityDetails = () => {
   };
 
   //calling edit api
-  const handleEdit = () => {
+   const handleEdit = () => {
     axios
       .put(
         `http://localhost:4000/community/${communityId}`,

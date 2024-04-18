@@ -11,9 +11,20 @@ import {
   FormControl,
   Divider,
   Link,
+  Spacer,
+  MenuButton,
+  Menu,
+  MenuList,
+  IconButton,
+  MenuItem,
+  useToast,
 } from "@chakra-ui/react";
 import { io, Socket } from "socket.io-client";
+import { RxExit } from "react-icons/rx";
 import { AuthContext } from "../../context/authContext";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { is } from "date-fns/locale";
+import axios from "axios";
 
 interface UserProfile {
   profileImgPath: any;
@@ -50,9 +61,9 @@ interface MessageProps {
   message: Messages[];
   users: User[];
   _id: string;
-  setMessages?: React.Dispatch<React.SetStateAction<Messages[]>>;
-  addNewMessage?: (message: Messages) => void;
   chatImgPath?: string;
+  isGroupChat?: boolean;
+  fetchMessageDetails: () => Promise<void>; // Add this line
 }
 
 const Message: React.FC<MessageProps> = ({
@@ -61,14 +72,15 @@ const Message: React.FC<MessageProps> = ({
   _id,
   socket,
   chatImgPath,
-  setMessages,
-  addNewMessage,
+  isGroupChat,
+  fetchMessageDetails,
 }) => {
   console.log("this is chatImgPath >>> ", chatImgPath);
   const [currentMessage, setCurrentMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userId } = React.useContext(AuthContext);
   const socketRef = useRef<any>();
+  const toast = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,6 +98,36 @@ const Message: React.FC<MessageProps> = ({
         senderId: userId, // Make sure this is the correct ID format
       });
       setCurrentMessage("");
+    }
+  };
+
+  const leaveChat = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/chat/${_id}/leave/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast({
+        title: response.data.message,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      fetchMessageDetails();
+    } catch (err) {
+      toast({
+        title: "An error occurred.",
+        description: "Unable to leave chat",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      console.log(err);
     }
   };
 
@@ -130,6 +172,24 @@ const Message: React.FC<MessageProps> = ({
                     </>
                   )}
                 </Text>
+                <Spacer />
+                {isGroupChat && (
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      aria-label="Options"
+                      icon={<BsThreeDotsVertical />}
+                      size="xs"
+                      variant="outline"
+                      border={3}
+                    />
+                    <MenuList>
+                      <MenuItem icon={<RxExit />} onClick={leaveChat}>
+                        Leave chat
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                )}
               </Stack>
             </Box>
             <Divider />

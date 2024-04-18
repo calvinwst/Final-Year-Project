@@ -197,8 +197,7 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
         `http://localhost:4000/userfeed/${_id}/comment`,
         {
           user: userId,
-          content: (document.getElementById("comment") as HTMLTextAreaElement)
-            ?.value,
+          content: comment,
         },
         {
           headers: {
@@ -384,7 +383,11 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
               variant="outline"
             />
             <MenuList>
-              {moderator === auth.userId && (
+              {moderator === auth.userId ? (
+                <MenuItem icon={<AiFillDelete />} onClick={onDelete}>
+                  Delete
+                </MenuItem>
+              ) : (
                 <MenuItem icon={<AiFillDelete />} onClick={onDelete}>
                   Delete
                 </MenuItem>
