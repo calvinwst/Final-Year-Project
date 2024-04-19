@@ -6,8 +6,7 @@ const jwt = require("jsonwebtoken"); // for generating token
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const passport = require("passport");
 const { OAuth2Client } = require("google-auth-library");
-const crypto = require('crypto');
-
+const crypto = require("crypto");
 
 //passport middleware
 
@@ -38,6 +37,9 @@ passport.use(
               location: "N/A",
               specialty: "N/A",
             },
+            emailVerification: {
+              verified: true,
+            },
           });
           await newUser.save();
           done(null, newUser);
@@ -46,15 +48,15 @@ passport.use(
         console.error("error", error);
         done(error, null);
       }
-    },
-  ),
+    }
+  )
 );
 
 exports.googleLogin = (req, res, next) => {
   passport.authenticate("google", { scope: ["profile", "email"] })(
     req,
     res,
-    next,
+    next
   );
 };
 
@@ -76,7 +78,7 @@ exports.googleLoginCallback = async (req, res, next) => {
       let token = jwt.sign(
         { userId: user.id, email: user.email },
         "secretion",
-        { expiresIn: "1h" },
+        { expiresIn: "1h" }
       );
       res.status(200).json({
         message: "Login successful",
@@ -100,7 +102,7 @@ exports.googleLoginCallback = async (req, res, next) => {
       let token = jwt.sign(
         { userId: newUser.id, email: newUser.email },
         "secretion",
-        { expiresIn: "1h" },
+        { expiresIn: "1h" }
       );
       res.status(200).json({
         message: "Login successful",
@@ -143,7 +145,7 @@ exports.register = async (req, res) => {
       "secretion",
       {
         expiresIn: "1h",
-      },
+      }
     );
 
     const newUser = new User({
@@ -167,7 +169,7 @@ exports.register = async (req, res) => {
     let token = jwt.sign(
       { userId: newUser.id, email: newUser.email },
       "secretion",
-      { expiresIn: "1h" },
+      { expiresIn: "1h" }
     );
     console.log("the token is create", token);
 
@@ -233,7 +235,7 @@ exports.login = async (req, res) => {
           token = jwt.sign(
             { userId: user.id, email: user.email },
             "secretion",
-            { expiresIn: "1h" },
+            { expiresIn: "1h" }
           );
         } catch (error) {
           console.error(error);
