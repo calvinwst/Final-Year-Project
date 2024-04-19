@@ -25,6 +25,7 @@ import {
   FormLabel,
   Icon,
   Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiLike, BiChat, BiShare, BiSolidLike } from "react-icons/bi";
@@ -120,6 +121,12 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
   const { token } = useContext(AuthContext);
+  const maxWidth = useBreakpointValue({ base: "90vw", md: "70vw", lg: "50vw" });
+  const maxHeight = useBreakpointValue({
+    base: "90vh",
+    md: "70vh",
+    lg: "50vh",
+  });
 
   useEffect(() => {
     if (userId !== undefined) {
@@ -328,7 +335,6 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
     }
   };
 
-  console.log("thsi si the comment :: ", comments);
   return (
     <>
       <Box borderWidth="1px" borderRadius="lg" bg="white" shadow="sm" p={3}>
@@ -412,7 +418,8 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
               <Image
                 src={`http://localhost:4000/${fileImgPath}`}
                 alt={name}
-                boxSize="350px"
+                maxW="350px"
+                maxH="350px"
                 objectFit="cover"
                 onClick={onOpen}
               />
@@ -526,14 +533,29 @@ const CustomFeedCard: React.FC<CustomFeedCardProps> = ({
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent maxWidth="90vw" maxHeight="90vh">
-          <ModalBody display="flex" alignItems="center" justifyContent="center">
+        <ModalContent
+          maxWidth={maxWidth}
+          maxHeight={maxHeight}
+          margin="auto"
+          position="fixed"
+          top="5%"
+          left="25%"
+          transform="translate(-50%, -50%)"
+        >
+          <ModalBody
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            p={0} // Remove padding to use the full space for the image
+          >
             <Image
               src={`http://localhost:4000/${fileImgPath}`}
               alt={name}
               objectFit="contain"
               maxW="100%"
               maxH="100%"
+              width="auto"
+              height="auto"
             />
           </ModalBody>
         </ModalContent>

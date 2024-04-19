@@ -203,12 +203,6 @@ const UserFeed = () => {
                 _id: "",
               };
             });
-            // setUserFeedContent({
-            //   content: "",
-            //   user: "",
-            //   image: "",
-            //   _id: "",
-            // });
             setSelectedImage("");
             fetchUserFeed();
             toast({
